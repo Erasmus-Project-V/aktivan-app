@@ -1,0 +1,7 @@
+{
+  "name": "capacitor-distance-test",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "custom"
+}
