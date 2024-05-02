@@ -138,12 +138,16 @@
     }
 </script>
 
-<button on:click={startTracking}>Track</button>
 <h1>Distance: {Math.round(distance * 1000)} m</h1>
 <h1>Size: {locs.length}</h1>
 <h1>{text}</h1>
+<button on:click={startTracking}>Track</button>
 
 <style>
+    button {
+        width: 50px;
+        height: 50px;
+    }
     h1 {
         font-family: sans-serif;
     }
