@@ -1,9 +1,9 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.optimuseprime.cap',
-  appName: 'capacitor-distance-test',
-  webDir: 'build',
+  appId: "eu.greenstem.aktivan",
+  appName: "aktiVan",
+  webDir: "build",
   android: {
     useLegacyBridge: true,
   },
