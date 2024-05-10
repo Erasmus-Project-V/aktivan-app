@@ -8,8 +8,8 @@
 </div>
 
 <main class="mt-5">
-    <form action="" class="flex flex-col justify-center items-center gap-5 w-full">
-        <Input className="w-10/12 px-6 py-4" placeholder="Email or username"/>
-        <Input className="w-10/12 px-6 py-4" type="password" placeholder="Password"/>
+    <form action="" class="flex flex-col justify-center items-center gap-5">
+        <Input className="w-10/12" type="text" placeholder="Email or username"/>
+        <Input className="w-10/12" type="password" placeholder="Password"/>
     </form>
 </main>
