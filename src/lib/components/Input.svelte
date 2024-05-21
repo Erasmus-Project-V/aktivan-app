@@ -2,25 +2,23 @@
     export let type: "text" | "password" = "text";
     export let placeholder = "";
     export let className: string;
+    export let value = "";
+
+    let input: HTMLInputElement;
 </script>
 
-<div class="w-72 input-transition">
-    <span class="placeholder ml-4 absolute z-10 cursor-auto text-white">{placeholder}</span>
-    <input class="w-full pl-1 mt-4 input-transition z-0 placeholder-white outline-none outline text-white border-b-2 border-b-gray bg-black {className}"
+<div class="group w-72 input-transition relative">
+    <span class="absolute top-0 right-3">
+        <slot/>
+    </span>
+    <input bind:this={input} on:change={() => value = input?.value} value={value} class="peer py-2 w-full input-transition placeholder-white outline-none text-white border-b-2 border-b-gray bg-black {className}"
            {type}>
+    <span class="peer-focus:text-[0] {value.length > 0 ? 'text-[0]' : ''} absolute ml-[-17.5rem] placeholder cursor-auto text-white">{placeholder}</span>
 </div>
 
-<style lang="scss">
-  .input-transition {
-    position: relative;
-  }
-
-  .input-transition input:focus + span {
-    font-size: 0;
-    transform: translateY(-100%);
-  }
+<style lang="postcss">
 
   .input-transition span {
-    transition: 300ms all;
+    transition: 250ms all;
   }
 </style>
