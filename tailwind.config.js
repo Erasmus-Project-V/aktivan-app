@@ -11,6 +11,7 @@ export default {
       "gray": "#2C2C2E",
       "white": "#fff",
       "lightblue": "#5996B9",
+      "warning": "#FF2424"
     },
     fontFamily: {
       sans: ["Open Sans", "sans-serif"],
