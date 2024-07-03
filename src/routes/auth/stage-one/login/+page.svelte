@@ -2,7 +2,7 @@
     import bg from "$lib/assets/login-background.png";
     import Input from "$lib/components/Input.svelte";
     import Button from "$lib/components/Button.svelte";
-    import RightArrow from "$lib/components/icons/RightArrow.svelte";
+    import RightArrow from "$lib/components/icons/RightArrowIcon.svelte";
     import PasswordInput from "$lib/components/PasswordInput.svelte";
 
     let passwordHidden = true;

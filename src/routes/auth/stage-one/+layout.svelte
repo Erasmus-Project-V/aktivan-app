@@ -3,8 +3,6 @@
     import { page } from "$app/stores";
 </script>
 
-<Body class="bg-black" />
-
 <div class="absolute text-white text-xs font-semibold">
     <nav class="mt-16 ml-4">
         <div class="flex flex-row gap-9">

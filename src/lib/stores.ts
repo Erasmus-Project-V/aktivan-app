@@ -1,23 +1,12 @@
 import { writable } from "svelte/store";
-
-export enum Gender {
-    MALE = "male",
-    FEMALE = "female",
-    NON_BINARY = "non-binary",
-}
-
-export interface SignUpDetails {
-    username: string;
-    email: string;
-    password: string;
-    confirmPassword: string;
-    emailVerified: boolean;
-    age: number;
-    weight: number;
-    height: number;
-    gender: Gender;
-}
+import type { SignUpDetails, StageOneSignUpAlerts } from "$lib/types/auth";
 
 const signUpDetailsStore = writable<SignUpDetails>();
+const signUpStageOneAlerts = writable<StageOneSignUpAlerts>({
+    confirmPasswordAlert: undefined,
+    emailAlert: undefined,
+    passwordAlert: undefined,
+    usernameAlert: undefined
+});
 
-export { signUpDetailsStore };
+export { signUpDetailsStore, signUpStageOneAlerts };

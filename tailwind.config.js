@@ -14,7 +14,8 @@ export default {
       "warning": "#FF2424"
     },
     fontFamily: {
-      sans: ["Open Sans", "sans-serif"],
+      sans: ["Actor", "sans-serif"],
+      advent: ["Advent Pro", "sans-serif"],
     }
   },
   plugins: [],

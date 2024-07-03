@@ -20,18 +20,22 @@
 </script>
 
 <div class="group w-72 input-transition relative">
-    {#if alert.text}
-        <span class="absolute -mt-4 text-sm {typeColors.get(alert.type)}">
-            {alert.text}
-        </span>
-    {/if}
     <span class="absolute top-0 right-3">
         <slot/>
     </span>
     <input on:input={onChange} bind:this={input} on:change={() => value = input?.value} value={value}
-           class="peer py-2 w-full input-transition placeholder-white outline-none text-white border-b-2 border-b-gray bg-black {$$props.class}"
+           class="peer py-2 w-full input-transition placeholder-white outline-none text-white border-b-[1.5px] {alert.type === AlertType.WARNING ? 'border-b-warning' : 'border-b-gray'} bg-black {$$props.class}"
            {type}>
-    <span class="peer-focus:text-[0] {value.length > 0 ? 'text-[0]' : ''} absolute ml-[-18rem] placeholder cursor-auto text-white">{placeholder}</span>
+    <span class="peer-focus:text-[0] {value.length > 0 ? 'text-[0]' : ''} absolute ml-[-18rem] placeholder cursor-auto
+            {alert.type === AlertType.WARNING ? 'text-warning' : 'text-white'}"
+    >
+        {placeholder}
+    </span>
+    {#if alert.text}
+        <span class="peer-focus:opacity-100 opacity-0 absolute mt-1 text-xs {typeColors.get(alert.type)}">
+            {alert.text}
+        </span>
+    {/if}
 </div>
 
 <style lang="postcss">
