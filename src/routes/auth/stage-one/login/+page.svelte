@@ -1,5 +1,5 @@
 <script lang="ts">
-    import bg from "$lib/assets/login-background.png";
+    import bg from "$lib/assets/login-background.webp";
     import Input from "$lib/components/Input.svelte";
     import Button from "$lib/components/Button.svelte";
     import RightArrow from "$lib/components/icons/RightArrowIcon.svelte";
@@ -7,10 +7,7 @@
 
     let passwordHidden = true;
     
-    function togglePassword(e: KeyboardEventInit) {
-        if (e.key && e.key !== "Enter") {
-            return;
-        }
+    function togglePassword() {
         passwordHidden = !passwordHidden;
     }
 </script>
