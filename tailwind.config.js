@@ -9,6 +9,7 @@ export default {
     colors: {
       "black": "#1C1C1E",
       "gray": "#2C2C2E",
+      "lightgray": "#474747",
       "white": "#fff",
       "lightblue": "#5996B9",
       "warning": "#FF2424"

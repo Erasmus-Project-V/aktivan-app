@@ -61,7 +61,6 @@
     }
 
     function onSignUp() {
-        console.log(username);
         if (!validateSignUpData()) {
             return;
         }
@@ -96,7 +95,7 @@
             password,
             confirmPassword,
         } as SignUpDetails;
-        goto("/auth/stage-two/gender-selection");
+        goto("/auth/stage-two/email-verification");
     }
 </script>
 
