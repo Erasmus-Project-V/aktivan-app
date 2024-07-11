@@ -5,19 +5,15 @@
     import ArrowRightIcon from "$lib/components/icons/ArrowRightIcon.svelte";
 </script>
 
-<div class="bg-black text-white p-4">
-    <BackHeader class="mt-4 mb-8" href="/profile/profile-settings">Settings</BackHeader>
+<div class="bg-black text-white min-h-screen p-4">
+    <BackHeader href="/profile/profile-settings-settings/settings" class="mt-4 mb-8">About Us</BackHeader>
     <MenuButtonList class="mt-4">
-        <MenuButton href="/profile/profile-settings/settings/notifications">
-            Notifications
+        <MenuButton href="/profile/profile-settings-settings/settings/aboutus/credits">
+            Credits
             <ArrowRightIcon slot="icon"/>
         </MenuButton>
-        <MenuButton href="/profile/profile-settings/settings/personalization">
-            Personalization
-            <ArrowRightIcon slot="icon"/>
-        </MenuButton>
-        <MenuButton href="/profile/profile-settings/settings/aboutus">
-            About Us
+        <MenuButton href="/profile/profile-settings/settings/aboutus/contact">
+            Contact Us
             <ArrowRightIcon slot="icon"/>
         </MenuButton>
     </MenuButtonList>

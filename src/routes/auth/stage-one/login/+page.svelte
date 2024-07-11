@@ -23,7 +23,7 @@
 
         <button class="bg-none self-end -mt-3">
             <span class="text-lightblue font-bold text-sm">
-                Forgot password?
+                <a href="/auth/restart-password/stage-one">Forgot password?</a>
             </span>
         </button>
 
