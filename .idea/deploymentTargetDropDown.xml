@@ -5,6 +5,15 @@
       <entry key="android.app">
         <State />
       </entry>
+      <entry key="android.app.androidTest">
+        <State />
+      </entry>
+      <entry key="android.app.main">
+        <State />
+      </entry>
+      <entry key="android.app.unitTest">
+        <State />
+      </entry>
     </value>
   </component>
 </project>

@@ -4,6 +4,6 @@
 </script>
 
 <div class="bg-black flex flex-col p-4 text-gray-300">
-    <BackHeader href="/profile/profile-settings/settings/aboutus" class="mt-4 mb-8">Contact Us</BackHeader>
+    <BackHeader href="/profile/profile-settings/settings/about-us" class="mt-4 mb-8">Contact Us</BackHeader>
     <LineSeparator />
 </div>

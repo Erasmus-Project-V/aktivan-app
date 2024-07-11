@@ -16,7 +16,7 @@
             Personalization
             <ArrowRightIcon slot="icon"/>
         </MenuButton>
-        <MenuButton href="/profile/profile-settings/settings/aboutus">
+        <MenuButton href="/profile/profile-settings/settings/about-us">
             About Us
             <ArrowRightIcon slot="icon"/>
         </MenuButton>
