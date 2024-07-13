@@ -1,4 +1,16 @@
 <script lang="ts">
+    import HealthDataSelector from "$lib/components/HealthDataSelector.svelte";
+    const heightOffset = 40;
+    const itemHeight = 60;
+    const nextPage = "";
+    const backPage = "/auth/stage-two/health-data/weight-selection";
+    const selectedHeight = 165;
+</script>
+
+<HealthDataSelector dataUnit="cm" {nextPage} {backPage} dataOffset={heightOffset} selectedData={selectedHeight} {itemHeight} />
+
+<!--
+<script lang="ts">
     import { onMount, setContext } from 'svelte';
     import NextButton from "$lib/components/NextButton.svelte";
     import BackButton from "$lib/components/BackButton.svelte";
@@ -58,3 +70,4 @@
     <NextButton on:click={next}/>
 </div>
 
+-->

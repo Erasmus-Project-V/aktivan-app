@@ -1,29 +1,44 @@
 <script lang="ts">
-    import { onMount } from 'svelte';
+    import { writable } from 'svelte/store';
     import BackHeader from "$lib/components/BackHeader.svelte";
     import MenuButtonList from "$lib/components/MenuButtonList.svelte";
     import MenuButton from "$lib/components/MenuButton.svelte";
     import ArrowRightIcon from "$lib/components/icons/ArrowRightIcon.svelte";
+    import ProgressBar from "$lib/components/ProgressBar.svelte";
 
-    function addLevel(amount: number) {
-        const bars = document.getElementsByClassName("progress");
+    const progressValue = writable(72);
+    const levelValue = writable(1);
 
-        if (bars.length > 0) {
-            const bar = bars[0] as HTMLElement;
-            bar.style.width = amount + "%";
-        } else {
-            console.error("Progress bar element not found");
+    function addProgress(amount: number) {
+        if (amount <= 0){
+            console.log("Amount must be greater than 0!")
+        }
+        else{
+            progressValue.update(value => {
+                let newValue = value + amount;
+                if (newValue > 100) newValue = 100;
+                if (newValue < 0) newValue = 0;
+                return newValue;
+            });
         }
     }
 
-    (window as any).addLevel = addLevel;
-
-    onMount(() => {
-        const progressBar = document.querySelector('.progress') as HTMLElement;
-        if (progressBar) {
-            progressBar.style.width = '50%';
+    function addLevel(level: number) {
+        if (level <= 0){
+            console.log("Level must be greater than 0!")
         }
-    });
+        else{
+            levelValue.update(value => {
+                let newValue = value + level;
+                if (newValue > 999) newValue = 999;
+                if (newValue < 1) newValue = 1;
+                return newValue;
+            });
+        }
+    }
+
+    (window as any).addProgress = addProgress;
+    (window as any).addLevel = addLevel;
 </script>
 
 <style>
@@ -46,29 +61,13 @@
         margin-top: 16px;
     }
 
-    .progress-bar {
-        height: 8px;
-        background-color: #474747;
-        border-radius: 4px;
-        position: relative;
-        width: 100%;
-    }
-
-    @keyframes grow {
+    @keyframes progress-animation {
         from {
-            width: 0%;
+            width: var(--previous-progress);
         }
         to {
-            width: 50%;
+            width: var(--progress);
         }
-    }
-
-    .progress {
-        height: 100%;
-        background-color: #3498db;
-        border-radius: 4px;
-        width: 50%;
-        animation: grow 2s ease-out;
     }
 
     .vertical-line {
@@ -81,9 +80,9 @@
 
 <div class="bg-black text-white p-4">
     <BackHeader href="/" class="my-4">Dashboard</BackHeader>
-    <div class="flex flex-col items-center mt-6 w-full">
+    <div class="flex flex-col items-center mt-6 w-full justify-items-center justify-center content-center">
         <div class="flex items-center w-full px-4">
-            <div class="profile-image">
+            <div class="profile-image mr-9">
                 <img src="https://st.depositphotos.com/1144472/2003/i/950/depositphotos_20030237-stock-photo-cheerful-young-man-over-white.jpg"
                      alt="Profile Avatar"/>
             </div>
@@ -91,12 +90,8 @@
             <p class="text-gray-400">Joined July 2024</p>
         </div>
         <div class="progress-container">
-            <div class="flex justify-between items-center">
-                <h2 class="text-2xl font-bold">Level 2</h2>
-            </div>
-            <div class="progress-bar">
-                <div class="progress"></div>
-            </div>
+
+            <ProgressBar progress={$progressValue} level={$levelValue}></ProgressBar>
         </div>
     </div>
     <MenuButtonList class="mt-8">

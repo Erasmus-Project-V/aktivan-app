@@ -32,7 +32,6 @@
         confirmPassword: {} as Alert,
     };
 
-
     function validateSignUpData(): boolean {
         try {
             validateStageOneSignUpData({ username, email, password, confirmPassword })
