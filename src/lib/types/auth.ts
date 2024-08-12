@@ -17,7 +17,8 @@ export interface StageTwoSignUpDetails {
     emailVerified: boolean;
     age: number;
     weight: number;
-    height: number
+    height: number;
+    gender: string;
 }
 
 export type SignUpDetails = StageOneSignUpDetails & StageTwoSignUpDetails;

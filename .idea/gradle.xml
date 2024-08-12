@@ -24,10 +24,12 @@
             <option value="$PROJECT_DIR$/node_modules/@capacitor-community/background-geolocation/android" />
             <option value="$PROJECT_DIR$/node_modules/@capacitor/android/capacitor" />
             <option value="$PROJECT_DIR$/node_modules/@capacitor/app/android" />
+            <option value="$PROJECT_DIR$/node_modules/@capacitor/camera/android" />
             <option value="$PROJECT_DIR$/node_modules/@capacitor/geolocation/android" />
             <option value="$PROJECT_DIR$/node_modules/@capacitor/haptics/android" />
             <option value="$PROJECT_DIR$/node_modules/@capacitor/keyboard/android" />
             <option value="$PROJECT_DIR$/node_modules/@capacitor/local-notifications/android" />
+            <option value="$PROJECT_DIR$/node_modules/@capacitor/preferences/android" />
             <option value="$PROJECT_DIR$/node_modules/@capacitor/status-bar/android" />
           </set>
         </option>

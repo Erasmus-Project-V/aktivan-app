@@ -1,2 +1,36 @@
+import { pb } from "$lib/services/pocketbase";
+
 export const ssr = false;
 export const csr = true;
+
+import { redirect } from "@sveltejs/kit";
+import type { LayoutLoad } from "./$types";
+import { Preferences } from "@capacitor/preferences";
+import { userStore } from "$lib/stores";
+import { removePreferences, signOut } from "$lib/services/auth";
+
+export const load: LayoutLoad = async ({ url }) => {
+    const authToken = (await Preferences.get({ key: "authToken" })).value;
+    const userId = (await Preferences.get({ key: "userId" })).value;
+
+    if (!authToken && !url.pathname.includes("/auth/")) {
+        redirect(307, "/auth/stage-one/login");
+    }
+    if (authToken) {
+        try {
+            const user = await pb.collection("users").getOne(userId as string);
+
+            userStore.set(user);
+            pb.authStore.save(authToken, user);
+            if (!url.pathname.includes("/profile")) {
+                redirect(307, "/profile/exercise");
+            }
+        } catch (err: any) {
+            if (err.status === 401 || err.status === 403) {
+                await removePreferences();
+
+                redirect(307, "/auth/stage-one/login");
+            }
+        }
+    }
+};

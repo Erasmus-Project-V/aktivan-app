@@ -3,23 +3,36 @@
     import Title from "$lib/components/Title.svelte";
     import Input from "$lib/components/Input.svelte";
     import Button from "$lib/components/Button.svelte";
-    import { writable } from 'svelte/store';
+    import { goto } from "$app/navigation";
+    import { type Alert, AlertType } from "$lib/types/components";
+    import { z } from "zod";
+    import { pb } from "$lib/services/pocketbase";
 
-    const email = writable('');
+    let email: string;
+    let alert: Alert | undefined;
 
-    function redirectToStageTwo() {
-        email.subscribe(value => {
-            if (isValidEmail(value)) {
-                window.location.href = '/auth/restart-password/stage-two';
-            } else {
-                console.error('Invalid email address');
-            }
-        })();
+    async function redirectToStageTwo() {
+        if (!isValidEmail(email)) {
+            alert = {
+                type: AlertType.WARNING,
+                text: "Invalid email address"
+            };
+            return;
+        }
+        await pb.collection("users").requestPasswordReset(email);
+        await goto("/auth/restart-password/stage-two");
     }
 
     function isValidEmail(email: string): boolean {
-        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return emailPattern.test(email);
+        try {
+            z.object({
+                email: z.string().email()
+            }).parse({ email });
+        } catch (err) {
+            return false;
+        }
+
+        return true;
     }
 </script>
 
@@ -29,14 +42,14 @@
     <Title title="Forgot Password?" description="Enter your email address"></Title>
 
     <div class="pl-4 pt-20">
-        <Input className="text" placeholder="Email" bind:value={$email}></Input>
+        <Input bind:alert={alert} on:input={() => alert = undefined} className="text" placeholder="Email" bind:value={email}></Input>
     </div>
 
     <div class="pt-36 flex flex-col items-center">
         <span class="text-lightblue font-bold text-sm">
             <span>Send the code to my email address:</span>
         </span>
-        <Button class="mt-6 w-64" on:click={redirectToStageTwo}>
+        <Button class="mt-6 w-64" on:click={async () => await redirectToStageTwo()}>
             <span class="flex flex-row gap-1 items-center justify-center">
                 <span>Send</span>
             </span>

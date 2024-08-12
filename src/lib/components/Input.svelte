@@ -23,15 +23,21 @@
         <slot/>
     </span>
     <div class="flex flex-col">
-        <input on:input={onChange} bind:this={input} on:change={() => value = input?.value} value={value}
-               class="peer py-2 w-full input-transition placeholder-white outline-none text-white border-b-[1.5px] {alert.type === AlertType.WARNING ? 'border-b-warning' : 'border-b-gray'} bg-black {$$props.class}"
-               {type}>
+        {#if type === "password"}
+            <input on:input={onChange} bind:this={input} on:change={() => value = input?.value} bind:value={value}
+                   class="peer py-2 w-full input-transition placeholder-white text-white outline-none border-b-[1.5px] {alert.type === AlertType.WARNING ? 'border-b-warning' : 'text-white border-b-gray'} bg-black {$$props.class}"
+                   type="password">
+        {:else}
+            <input on:input={onChange} bind:this={input} on:change={() => value = input?.value} bind:value={value}
+                   class="peer py-2 w-full input-transition placeholder-white text-white outline-none border-b-[1.5px] {alert.type === AlertType.WARNING ? 'border-b-warning' : 'text-white border-b-gray'} bg-black {$$props.class}"
+                   type="text">
+        {/if}
         <span class="peer-focus:text-[0] {value.length > 0 ? 'text-[0]' : ''} absolute placeholder cursor-auto
             {alert.type === AlertType.WARNING ? 'text-warning' : 'text-white'}">
                 {placeholder}
         </span>
         {#if alert.text}
-            <span class="peer-focus:opacity-100 opacity-0 absolute mt-11 text-xs {typeColors.get(alert.type)}">
+            <span class="opacity-0 peer-focus:opacity-100 absolute mt-11 text-xs {typeColors.get(alert.type)}">
                 {alert.text}
             </span>
         {/if}
@@ -39,8 +45,7 @@
 </div>
 
 <style lang="postcss">
-
     .input-transition span {
-        transition: 250ms all;
+        transition: 50ms all;
     }
 </style>

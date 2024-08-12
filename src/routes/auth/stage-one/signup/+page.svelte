@@ -20,10 +20,11 @@
     let passwordHidden = true;
     let confirmPasswordHidden = true;
 
-    let username: string;
-    let email: string;
-    let password = "";
-    let confirmPassword = "";
+    //TODO: Remove defaults
+    let username: string = "Optimus";
+    let email: string = "karlo.vizec45@gmail.com";
+    let password = "12345678";
+    let confirmPassword = "12345678";
 
     let alerts: StageOneSignUpAlerts = {
         username: {} as Alert,
@@ -59,13 +60,13 @@
         confirmPasswordHidden = !confirmPasswordHidden;
     }
 
-    function onSignUp() {
+    async function onSignUp() {
         if (!validateSignUpData()) {
             return;
         }
 
         try {
-            dryCreateUser(username, email, confirmPassword);
+            await dryCreateUser(username, email, confirmPassword);
         } catch (err) {
             if (err === UsernameAlreadyTakenErr) {
                 alerts = {
@@ -75,7 +76,9 @@
                         type: AlertType.WARNING
                     },
                 };
-            } else if (err === EmailAlreadyTakenErr) {
+                return;
+            }
+            if (err === EmailAlreadyTakenErr) {
                 alerts = {
                     ...alerts,
                     email: {
@@ -83,9 +86,8 @@
                         type: AlertType.WARNING
                     },
                 };
+                return;
             }
-
-            return;
         }
 
         $signUpDetailsStore = {
@@ -94,10 +96,14 @@
             password,
             confirmPassword,
         } as SignUpDetails;
-        goto("/auth/stage-two/email-verification");
+        console.log($signUpDetailsStore);
+        await goto("/auth/stage-two/health-data/gender-selection");
     }
 </script>
 
+<svelte:head>
+    <link rel="preload" as="image" href={bg}>
+</svelte:head>
 
 <div class="z-10">
     <img src={bg} alt="A man running.">

@@ -2,10 +2,32 @@
     import Button from "$lib/components/Button.svelte";
     import BackButton from "$lib/components/BackButton.svelte";
     import { goto } from "$app/navigation";
+    import { verifyEmail } from "$lib/services/auth";
+    import { signUpDetailsStore, userStore } from "$lib/stores";
+    import { pb } from "$lib/services/pocketbase";
+    import { onDestroy, onMount } from "svelte";
 
     function back() {
-        goto("/auth/stage-one/signup")
+        goto("/auth/stage-one/signup");
     }
+
+    let intervalId: any;
+
+    onMount(async () => {
+        intervalId = setInterval(async () => {
+            console.log($userStore)
+            const user = await pb.collection("users").getOne($userStore?.id!);
+            if (user.verified) {
+                clearInterval(intervalId);
+                await goto("/profile/exercise");
+            }
+        }, 1000);
+    });
+
+    onDestroy(() => {
+        clearInterval(intervalId);
+    });
+
 </script>
 
 <main class="h-full flex flex-col px-6 text-center mt-12">

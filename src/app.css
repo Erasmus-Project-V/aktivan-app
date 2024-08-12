@@ -10,4 +10,5 @@ body {
     @apply font-sans;
     @apply pb-4;
     @apply bg-black;
+    @apply overflow-x-hidden;
 }

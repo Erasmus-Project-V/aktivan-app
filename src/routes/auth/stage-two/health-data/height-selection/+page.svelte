@@ -1,13 +1,22 @@
 <script lang="ts">
     import HealthDataSelector from "$lib/components/HealthDataSelector.svelte";
+    import { createUser, signIn, verifyEmail } from "$lib/services/auth";
+    import { signUpDetailsStore } from "$lib/stores";
     const heightOffset = 40;
     const itemHeight = 60;
-    const nextPage = "";
+    const nextPage = "/auth/stage-two/email-verification";
     const backPage = "/auth/stage-two/health-data/weight-selection";
-    const selectedHeight = 165;
+    let selectedHeight = 210;
+
+    async function onNext() {
+        $signUpDetailsStore.height = selectedHeight;
+        await createUser($signUpDetailsStore);
+        await signIn($signUpDetailsStore.email, $signUpDetailsStore.password);
+        await verifyEmail($signUpDetailsStore.email);
+    }
 </script>
 
-<HealthDataSelector dataUnit="cm" {nextPage} {backPage} dataOffset={heightOffset} selectedData={selectedHeight} {itemHeight} />
+<HealthDataSelector on:next={async () => await onNext()} dataUnit="cm" {nextPage} {backPage} dataOffset={heightOffset} bind:selectedData={selectedHeight} {itemHeight} />
 
 <!--
 <script lang="ts">

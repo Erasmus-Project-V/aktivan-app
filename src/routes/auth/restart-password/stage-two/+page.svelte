@@ -1,9 +1,10 @@
 <script lang="ts">
     import BackHeader from "$lib/components/BackHeader.svelte";
     import Button from "$lib/components/Button.svelte";
+    import { goto } from "$app/navigation";
 
-    function redirectToLogin() {
-        window.location.href = '/auth/stage-one/login';
+    async function redirectToLogin() {
+        await goto("/auth/stage-one/login");
     }
 </script>
 

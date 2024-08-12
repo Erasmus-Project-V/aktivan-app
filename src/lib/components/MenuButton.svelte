@@ -5,7 +5,7 @@
 </script>
 
 <div class="mt-[-1px] border-t border-b border-lightgray p-4">
-    <button on:click on:click={() => goto(href)} class="flex border-none justify-between items-center w-full">
+    <button on:click class="flex border-none justify-between items-center w-full">
         <slot/>
         <slot name="icon" />
     </button>

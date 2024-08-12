@@ -18,13 +18,14 @@
 
     onMount(() => {
         if (container) {
-            container.scrollTop = (selectedData - dataOffset - 1 - 3) * itemHeight;
+            container.scrollTop = ((selectedData - dataOffset) - dataOffset - 1 - 3) * itemHeight;
         }
     });
 
     function handleScroll(e: any) {
         const scrollTop = e.target.scrollTop;
-        selectedData = Math.floor(scrollTop / itemHeight) + 1;
+        selectedData = Math.floor(scrollTop / itemHeight) + 1 + dataOffset;
+        console.log(selectedData);
     }
 
     function next() {
@@ -46,14 +47,14 @@
         {#each data as data}
             <div
                     class="h-[60px] flex items-end justify-center transition-all duration-200 border-y-lightblue"
-                    class:text-white={Math.abs(data - dataOffset - selectedData) === 1}
-                    class:opacity-30={Math.abs(data - dataOffset - selectedData) > 1}
-                    class:opacity-10={Math.abs(data - dataOffset - selectedData) > 2}
-                    class:border-y-2={data - dataOffset === selectedData}
-                    class:text-6xl={data - dataOffset === selectedData}
-                    class:text-4xl={Math.abs(data - dataOffset - selectedData) === 1}
-                    class:text-3xl={Math.abs(data - dataOffset - selectedData) === 2}
-                    class:text-xl={Math.abs(data - dataOffset - selectedData) > 2}
+                    class:text-white={Math.abs(data - selectedData) === 1}
+                    class:opacity-30={Math.abs(data - selectedData) > 1}
+                    class:opacity-10={Math.abs(data - selectedData) > 2}
+                    class:border-y-2={data === selectedData}
+                    class:text-6xl={data === selectedData}
+                    class:text-4xl={Math.abs(data - selectedData) === 1}
+                    class:text-3xl={Math.abs(data - selectedData) === 2}
+                    class:text-xl={Math.abs(data - selectedData) > 2}
             >
                 {data} <p class="text-xs opacity-80">{dataUnit}</p>
             </div>

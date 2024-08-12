@@ -4,8 +4,6 @@ export default {
       "./src/**/*.{html,js,svelte,ts}"
   ],
   theme: {
-    extend: {
-    },
     colors: {
       "black": "#1C1C1E",
       "gray": "#2C2C2E",
@@ -15,10 +13,13 @@ export default {
       "lightblue": "#5996B9",
       "warning": "#FF2424",
       "blue": "#5FA3C9",
+      "green": "#84CD78",
+      "red": "#D26767"
     },
     fontFamily: {
-      sans: ["Actor", "sans-serif"],
-      advent: ["Advent Pro", "sans-serif"],
+      "sans": ["Actor", "sans-serif"],
+      "advent": ["Advent Pro", "sans-serif"],
+      "open-sans": ["Open Sans", "sans-serif"],
     }
   },
   plugins: [],
