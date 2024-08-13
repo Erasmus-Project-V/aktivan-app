@@ -7,6 +7,7 @@
     import { userStore } from "$lib/stores";
     import { pb } from "$lib/services/pocketbase";
     import { Camera, CameraResultType } from "@capacitor/camera";
+    import { compressImage } from "$lib/services/utils";
 
     let avatarSrc = `https://api.aktivan.green-stem.eu/api/files/${$userStore?.collectionId}/${$userStore?.id}/${$userStore?.avatar}`;
 
@@ -41,9 +42,21 @@
         const avatarFile = await fetch(avatar.webPath!);
         const avatarBlob = await avatarFile.blob();
 
+        let compressedBlob: Blob;
+
+        try {
+            compressedBlob = await compressImage(avatarBlob, 50, 0.5);
+        } catch (err) {
+            console.log(err);
+        }
+
+        if (!compressedBlob) {
+            console.log("Error");
+        }
+
         // upload avatar
         await pb.collection("users").update($userStore?.id, {
-            avatar: avatarBlob,
+            avatar: compressedBlob,
         });
     }
 </script>

@@ -20,6 +20,7 @@
     import { calculateCaloriesBurned, calculateSteps, type StepCalculatorParams } from "$lib/services/exercise";
     import { pb } from "$lib/services/pocketbase";
     import { DateTime } from "luxon";
+    import { Geolocation } from "@capacitor/geolocation";
 
     const BackgroundGeolocation = registerPlugin<BackgroundGeolocationPlugin>("BackgroundGeolocation");
 
@@ -33,6 +34,9 @@
         }
         await LocalNotifications.requestPermissions();
         await watchLocation();
+        if (!watcherId) {
+            return;
+        }
         startStore.set(DateTime.now().toISO());
         const firstLocation = await guessLocation(2000);
         if (firstLocation) {
@@ -54,6 +58,13 @@
     }
 
     async function watchLocation() {
+        try {
+            await Geolocation.checkPermissions();
+        } catch (err) {
+            window.alert("Please enable your location.")
+            return;
+        }
+
         watcherId = await BackgroundGeolocation.addWatcher({
             backgroundMessage: "aktiVan is tracking your exercise.",
             backgroundTitle: "aktiVan",
@@ -65,7 +76,15 @@
                 return;
             }
             if (!currLoc || err) {
-                console.log(err);
+                if (err?.code === "NOT_AUTHORIZED") {
+                    if (window.confirm(
+                        "We need your location, " +
+                        "but do not have permission.\n\n" +
+                        "Open settings now?"
+                    )) {
+                        BackgroundGeolocation.openSettings();
+                    }
+                }
                 return;
             }
             if (currLoc.accuracy >= 10) {
@@ -75,10 +94,16 @@
                 speed = Number(0).toFixed(1);
                 return;
             }
+
             const stepsPerMeter = $stepStore / $distanceStore;
             speed = (Math.round((currLoc.speed ?? 0) * (isNaN(stepsPerMeter) ? 1 : stepsPerMeter) * 100) / 100).toFixed(1);
             if ($locationStore.length > 0) {
-                const distance = calculateDistance($locationStore[$locationStore.length - 1], currLoc);
+                let distance: number;
+                if (!currLoc.altitude || !$locationStore[$locationStore.length - 1].altitude) {
+                    distance = calculateDistanceWithoutAltitude($locationStore[$locationStore.length - 1], currLoc);
+                } else {
+                    distance = calculateDistance($locationStore[$locationStore.length - 1], currLoc);
+                }
                 distanceStore.update(value => value + distance);
                 countStepsAndCalories(distance);
             }
@@ -148,22 +173,22 @@
     });
 
 
-    /*    function calculateDistance(loc1: Location, loc2: Location): number {
-            const earthRadiusKm = 6371; // Earth's radius in kilometers
+    function calculateDistanceWithoutAltitude(loc1: Location, loc2: Location): number {
+        const earthRadiusKm = 6371; // Earth's radius in kilometers
 
-            const dLat = degreesToRadians(loc2.latitude - loc1.latitude);
-            const dLon = degreesToRadians(loc2.longitude - loc1.longitude);
+        const dLat = degreesToRadians(loc2.latitude - loc1.latitude);
+        const dLon = degreesToRadians(loc2.longitude - loc1.longitude);
 
-            const lat1 = degreesToRadians(loc1.latitude);
-            const lat2 = degreesToRadians(loc2.latitude);
+        const lat1 = degreesToRadians(loc1.latitude);
+        const lat2 = degreesToRadians(loc2.latitude);
 
-            const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-                Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(lat1) * Math.cos(lat2);
-            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-            const distanceKm = earthRadiusKm * c;
+        const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(lat1) * Math.cos(lat2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        const distanceKm = earthRadiusKm * c;
 
-            return distanceKm * 1000; // Convert to meters
-        }*/
+        return distanceKm * 1000; // Convert to meters
+    }
 
     function calculateDistance(loc1: Location, loc2: Location): number {
         const earthRadiusKm = 6371; // Earth's radius in kilometers
@@ -228,7 +253,9 @@
     </div>
     <div class="grid grid-cols-2 gap-8">
         <ActiveExerciseInfo size="md">
-            <span>{Math.trunc(($timeStore / 3600)).toString().padStart(2, "0")}:{Math.trunc((($timeStore % 3600) / 60)).toString().padStart(2, "0")}:{Math.trunc(($timeStore % 60)).toString().padStart(2, "0")}</span>
+            <span>{Math.trunc(($timeStore / 3600)).toString().padStart(2, "0")}
+                :{Math.trunc((($timeStore % 3600) / 60)).toString().padStart(2, "0")}
+                :{Math.trunc(($timeStore % 60)).toString().padStart(2, "0")}</span>
             <span slot="unit">Time</span>
         </ActiveExerciseInfo>
         {#if $selectedExerciseStore.showSteps}
@@ -241,7 +268,8 @@
             <span>{speed}</span>
             <span slot="unit">Tempo</span>
         </ActiveExerciseInfo>
-        <ActiveExerciseInfo class="{$selectedExerciseStore.showSteps ? '' : 'col-span-2 justify-self-center'}" size="md">
+        <ActiveExerciseInfo class="{$selectedExerciseStore.showSteps ? '' : 'col-span-2 justify-self-center'}"
+                            size="md">
             <span>{Math.round($caloriesStore)}</span>
             <span slot="unit">Calories</span>
         </ActiveExerciseInfo>

@@ -10,6 +10,12 @@
     import ExitExerciseButton from "$lib/components/ExitExerciseButton.svelte";
     import ExerciseMap from "$lib/components/ExerciseMap.svelte";
     import BackNavBar from "$lib/components/BackNavBar.svelte";
+    import type { LayoutData } from "./$types";
+    import { page } from "$app/stores";
+
+    export let data: LayoutData;
+
+    const activity = data.activities.find((activity: any) => activity.id === $page.params.id);
 </script>
 
 <Body class="overflow-hidden" />
@@ -25,25 +31,25 @@
     <!--        <img src={$selectedExerciseStore.background} class="w-screen h-screen absolute opacity-15" alt="A person exercising on a hill">-->
     <div>
         <ActiveExerciseInfo size="lg">
-            <span>1550</span>
+            <span>{activity.steps}</span>
             <span slot="unit">Steps</span>
         </ActiveExerciseInfo>
     </div>
     <div class="grid grid-cols-2 gap-8 mb-10">
         <ActiveExerciseInfo size="md">
-            <span>00:05:50</span>
+            <span>{activity.}</span>
             <span slot="unit">Time</span>
         </ActiveExerciseInfo>
         <ActiveExerciseInfo size="md">
-            <span>1.5</span>
-            <span slot="unit">Km</span>
+            <span>{activity.distance}</span>
+            <span slot="unit">Meters</span>
         </ActiveExerciseInfo>
         <ActiveExerciseInfo size="md">
-            <span>3</span>
+            <span>{Math.round(activity.distance / activity.duration)}</span>
             <span slot="unit">Tempo</span>
         </ActiveExerciseInfo>
         <ActiveExerciseInfo size="md">
-            <span>52</span>
+            <span>{activity.calories}</span>
             <span slot="unit">Calories</span>
         </ActiveExerciseInfo>
     </div>

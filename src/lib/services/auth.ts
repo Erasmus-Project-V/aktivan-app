@@ -78,6 +78,13 @@ export async function signIn(identity: string, password: string) {
 
     userStore.set(authData.record);
 
+    await CapacitorCookies.setCookie({
+        key: "authToken",
+        value: authData.token,
+        expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30).toISOString(),
+    });
+    // document.cookie = `authToken=${authData.token}; path=/`;
+
     await Preferences.set({
         key: "authToken",
         value: authData.token,

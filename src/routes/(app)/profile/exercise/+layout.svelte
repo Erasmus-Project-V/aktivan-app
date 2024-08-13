@@ -19,6 +19,10 @@
     });
 </script>
 
+<svelte:head>
+    <link rel="preload" as="image" href={avatarSrc}>
+</svelte:head>
+
 <main class="w-screen h-screen flex-1 justify-evenly items-center overflow-hidden">
     <slot />
 

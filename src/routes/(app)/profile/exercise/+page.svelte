@@ -9,8 +9,13 @@
     import { goto } from "$app/navigation";
     import { quintOut } from "svelte/easing";
     import { fade } from "svelte/transition";
+    import { onMount } from "svelte";
 
     // let selectedExercise: string;
+
+    onMount(() => {
+        selectedExerciseStore.set(exercises[0]);
+    });
 </script>
 
 <Body class="overflow-y-hidden"/>

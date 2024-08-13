@@ -12,7 +12,7 @@
 
     onMount(() => {
         if (container) {
-            container.scrollLeft = (selectedExerciseIdx - 1) * itemWidth;
+            container.scrollLeft = (selectedExerciseIdx - 1) * itemWidth + 10;
         }
     });
 
@@ -24,7 +24,7 @@
 </script>
 
 <div class="w-11/12 h-12 flex justify-center bg-gray-900 text-white rounded-lg {$$props.class}">
-    <div class="w-full px-28 pr-40 flex flex-row gap-3 overflow-x-scroll" bind:this={container} on:scroll={handleScroll}>
+    <div class="w-full pl-[7.5rem] pr-40 flex flex-row gap-3 overflow-x-scroll" bind:this={container} on:scroll={handleScroll}>
         {#each exercises as exercise, idx}
             <div
                     class="w-[120px] px-3 py-1 flex items-end justify-center transition-all duration-200 border-white border-opacity-60 font-bold uppercase text-sm"

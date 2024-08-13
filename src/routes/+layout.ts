@@ -9,27 +9,29 @@ import { Preferences } from "@capacitor/preferences";
 import { userStore } from "$lib/stores";
 import { removePreferences, signOut } from "$lib/services/auth";
 
-export const load: LayoutLoad = async ({ url }) => {
-    const authToken = (await Preferences.get({ key: "authToken" })).value;
-    const userId = (await Preferences.get({ key: "userId" })).value;
+export const load: LayoutLoad = async ({url}) => {
+    const authToken = (await Preferences.get({key: "authToken"})).value;
+    const userId = (await Preferences.get({key: "userId"})).value;
+
+/*    console.log(`Auth token: ${authToken}`);
+    console.log(`User id: ${userId}`);*/
 
     if (!authToken && !url.pathname.includes("/auth/")) {
         redirect(307, "/auth/stage-one/login");
     }
     if (authToken) {
-        try {
-            const user = await pb.collection("users").getOne(userId as string);
+        const user = await pb.collection("users").getOne(userId as string).catch(async (err) => {
+            if (err.status === 401 || err.status === 403) {
+                await removePreferences();
+                redirect(307, "/auth/stage-one/login");
+            }
+        });
 
+        if (user) {
             userStore.set(user);
             pb.authStore.save(authToken, user);
             if (!url.pathname.includes("/profile")) {
                 redirect(307, "/profile/exercise");
-            }
-        } catch (err: any) {
-            if (err.status === 401 || err.status === 403) {
-                await removePreferences();
-
-                redirect(307, "/auth/stage-one/login");
             }
         }
     }

@@ -1,8 +1,6 @@
 <script>
     import ExerciseCard from "$lib/components/ExerciseCard.svelte";
     import ChosenDayExerciseBlock from "$lib/components/ChosenDayExerciseBlock.svelte";
-
-
 </script>
 
 <main class="h-screen overflow-y-scroll flex flex-col m-4 pb-20">

@@ -8,7 +8,7 @@
 
     let selectedYear: number = DateTime.now().year;
     let selectedMonth: number = DateTime.now().month;
-    let selectedDay: number;
+    let selectedDay: number | null;
 
     let currentDate: DateTime;
     let daysInMonth: number;
@@ -28,6 +28,8 @@
     }
 
     function goBack() {
+        goto("/profile/exercise/stats/chosen-day/");
+        selectedDay = null;
         selectedMonth -= 1;
         if (selectedMonth === 0) {
             selectedMonth = 12;
@@ -40,6 +42,8 @@
     }
 
     function goForward() {
+        goto("/profile/exercise/stats/chosen-day/");
+        selectedDay = null;
         selectedMonth += 1;
         if (selectedMonth === 13) {
             selectedMonth = 1;
