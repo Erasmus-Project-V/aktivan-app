@@ -253,9 +253,7 @@
     </div>
     <div class="grid grid-cols-2 gap-8">
         <ActiveExerciseInfo size="md">
-            <span>{Math.trunc(($timeStore / 3600)).toString().padStart(2, "0")}
-                :{Math.trunc((($timeStore % 3600) / 60)).toString().padStart(2, "0")}
-                :{Math.trunc(($timeStore % 60)).toString().padStart(2, "0")}</span>
+            <span>{Math.trunc(($timeStore / 3600)).toString().padStart(2, "0")}:{Math.trunc((($timeStore % 3600) / 60)).toString().padStart(2, "0")}:{Math.trunc(($timeStore % 60)).toString().padStart(2, "0")}</span>
             <span slot="unit">Time</span>
         </ActiveExerciseInfo>
         {#if $selectedExerciseStore.showSteps}

@@ -22,7 +22,7 @@
     console.log(data.activities);
     $: {
         activitiesThisMonth = data.activities.filter((activity: any) => {
-            const activityDate = DateTime.fromSQL(activity.start);
+            const activityDate = DateTime.fromSQL(activity.start).toLocal();
             return activityDate.month === selectedMonth && activityDate.year === selectedYear;
         });
     }
@@ -34,7 +34,8 @@
             year: selectedYear,
             month: selectedMonth,
             day: selectedDay ? selectedDay : 1
-        });
+        }).toLocal();
+
         daysInMonth = currentDate.daysInMonth!;
     }
 
@@ -52,8 +53,8 @@
             selectedYear -= 1;
         }
         if (selectedYear < 1900) {
-            selectedYear = DateTime.now().year;
-            selectedMonth = DateTime.now().month;
+            selectedYear = DateTime.now().toLocal().year;
+            selectedMonth = DateTime.now().toLocal().month;
         }
     }
 
@@ -65,9 +66,9 @@
             selectedMonth = 1;
             selectedYear += 1;
         }
-        if (selectedYear > DateTime.now().year || selectedMonth > DateTime.now().month) {
-            selectedYear = DateTime.now().year;
-            selectedMonth = DateTime.now().month;
+        if (selectedYear > DateTime.now().toLocal().year || selectedMonth > DateTime.now().toLocal().month) {
+            selectedYear = DateTime.now().toLocal().year;
+            selectedMonth = DateTime.now().toLocal().month;
         }
     }
 </script>
@@ -83,13 +84,15 @@
         </ChosenDayMonthArrowSelector>
     </div>
     <div class="w-full flex flex-row gap-3 items-center overflow-x-scroll">
-        {#each Array.from({length: daysInMonth}, (_, i) => i) as day}
+        {#each Array.from({length: currentDate.daysInMonth}, (_, i) => i + 1) as day}
             <ChosenDayDate
-                    disabled={!activitiesThisMonth.find((activity) => DateTime.fromSQL(activity.start).day === day)}
-                    on:click={() => onSelectedDayChange(DateTime.fromObject({ year: selectedYear, month: selectedMonth, day: day + 1 }))}
-                    selected={day === selectedDay - 1} dayInMonth={day + 1}
-                    day={DateTime.fromObject({ year: selectedYear, month: selectedMonth, day: day + 1 }).weekdayShort?.at(0)}></ChosenDayDate>
+                    disabled={!activitiesThisMonth.find((activity) => DateTime.fromSQL(activity.start).toLocal().day === day)}
+                    on:click={() => onSelectedDayChange(DateTime.fromObject({ year: selectedYear, month: selectedMonth, day: day }).toLocal())}
+                    selected={day === selectedDay} dayInMonth={day}
+                    day={DateTime.fromObject({ year: selectedYear, month: selectedMonth, day: day }).toLocal().weekdayShort?.at(0)}></ChosenDayDate>
         {/each}
         <!--<ChosenDayDate></ChosenDayDate>-->
     </div>
 </div>
+
+<slot />
