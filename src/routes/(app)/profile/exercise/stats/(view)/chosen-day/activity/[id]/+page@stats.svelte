@@ -19,9 +19,14 @@
     export let data: PageData;
 
     let activity = data.activity;
-    let duration = DateTime.fromSQL(activity?.end)?.toLocal()?.diff(DateTime.fromSQL(activity.start).toLocal(), ["hours", "minutes", "seconds"]).toFormat("hh:mm:ss");
     let locations = data.locations;
     let coordinates = mapLocationsToCoordinates(locations);
+    let duration: any;
+
+    onMount(() => {
+        duration = DateTime.fromSQL(activity?.end)?.toLocal()?.diff(DateTime.fromSQL(activity.start).toLocal(), ["hours", "minutes", "seconds"]).toFormat("hh:mm:ss");
+    });
+
 
     function mapLocationsToCoordinates(locations: any) {
         return locations.map((location: any) => {
