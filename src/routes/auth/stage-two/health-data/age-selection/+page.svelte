@@ -12,4 +12,4 @@
     }
 </script>
 
-<HealthDataSelector on:next={onNext} dataUnit="" {nextPage} {backPage} dataOffset={ageOffset} bind:selectedData={selectedAge} {itemHeight} />
+<HealthDataSelector on:next={onNext} dataUnit="Age" {nextPage} {backPage} dataOffset={ageOffset} bind:selectedData={selectedAge} {itemHeight} />
