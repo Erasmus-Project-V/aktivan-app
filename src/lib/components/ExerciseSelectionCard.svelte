@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { goto } from "$app/navigation";
+
     export let exercise: string;
     export let backgroundUrl: string;
 </script>

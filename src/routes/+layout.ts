@@ -21,7 +21,7 @@ export const load: LayoutLoad = async ({url}) => {
     }
     if (authToken) {
         const user = await pb.collection("users").getOne(userId as string).catch(async (err) => {
-            if (err.status === 401 || err.status === 403) {
+            if (err) {
                 await removePreferences();
                 redirect(307, "/auth/stage-one/login");
             }

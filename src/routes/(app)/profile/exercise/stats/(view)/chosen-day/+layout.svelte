@@ -71,6 +71,8 @@
             selectedMonth = DateTime.now().toLocal().month;
         }
     }
+
+    $: forwardButtonDisabled = selectedYear >= DateTime.now().toLocal().year && selectedMonth >= DateTime.now().toLocal().month;
 </script>
 
 <div class="-mt-4 h-40 w-screen bg-gray flex flex-col gap-2 items-center rounded-b-3xl {$$props.class}">
@@ -79,7 +81,7 @@
             <BackArrowIcon/>
         </ChosenDayMonthArrowSelector>
         <span>{Info.months().at(selectedMonth - 1)} {selectedYear}</span>
-        <ChosenDayMonthArrowSelector on:click={goForward}>
+        <ChosenDayMonthArrowSelector disabled={forwardButtonDisabled} on:click={goForward}>
             <ForwardArrowIcon/>
         </ChosenDayMonthArrowSelector>
     </div>

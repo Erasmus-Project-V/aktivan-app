@@ -3,7 +3,7 @@ import { pb } from "$lib/services/pocketbase";
 import { DateTime } from "luxon";
 
 export const load: LayoutLoad = async () => {
-    const activities = await pb.collection("activities").getList(1, 10000000);
+    const activities = await pb.collection("activities").getFullList();
 
 /*    activities.items.map((activity) => {
         const newActivity = activity;
@@ -12,6 +12,6 @@ export const load: LayoutLoad = async () => {
     });*/
 
     return {
-        activities: activities.items,
+        activities: activities,
     };
 };

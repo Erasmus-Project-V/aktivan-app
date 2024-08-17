@@ -12,6 +12,7 @@
 		"ionic:serve": "vite dev"
 	},
 	"devDependencies": {
+		"@capacitor/assets": "^3.0.5",
 		"@capacitor/cli": "6.0.0",
 		"@ionic/cli": "^7.2.0",
 		"@sveltejs/adapter-auto": "^3.0.0",

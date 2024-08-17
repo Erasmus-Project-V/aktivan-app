@@ -1,5 +1,6 @@
 <script lang="ts">
     import ExerciseSelectionCard from "$lib/components/ExerciseSelectionCard.svelte";
+    import { goto } from "$app/navigation";
 
     import runningBg from "$lib/assets/backgrounds/running-square.png";
     import cyclingBg from "$lib/assets/backgrounds/cycling-square.png";
@@ -9,9 +10,9 @@
 </script>
 
 <main class="grid grid-cols-2 gap-2 p-2 w-screen">
-    <ExerciseSelectionCard exercise="Running" backgroundUrl={runningBg}/>
-    <ExerciseSelectionCard exercise="Cycling" backgroundUrl={cyclingBg} />
-    <ExerciseSelectionCard exercise="Hiking" backgroundUrl={hikingBg} />
-    <ExerciseSelectionCard exercise="Walking" backgroundUrl={walkingBg} />
-    <ExerciseSelectionCard exercise="Skating" backgroundUrl={skatingBg} class="justify-self-center col-span-2" />
+    <ExerciseSelectionCard on:click={async () => await goto(`/profile/exercise/stats/this-month/activity/running`)} exercise="Running" backgroundUrl={runningBg}/>
+    <ExerciseSelectionCard on:click={async () => await goto(`/profile/exercise/stats/this-month/activity/cycling`)} exercise="Cycling" backgroundUrl={cyclingBg} />
+    <ExerciseSelectionCard on:click={async () => await goto(`/profile/exercise/stats/this-month/activity/hiking`)} exercise="Hiking" backgroundUrl={hikingBg} />
+    <ExerciseSelectionCard on:click={async () => await goto(`/profile/exercise/stats/this-month/activity/walking`)} exercise="Walking" backgroundUrl={walkingBg} />
+    <ExerciseSelectionCard on:click={async () => await goto(`/profile/exercise/stats/this-month/activity/skating`)} exercise="Skating" backgroundUrl={skatingBg} class="justify-self-center col-span-2" />
 </main>

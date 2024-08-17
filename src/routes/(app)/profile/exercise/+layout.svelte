@@ -33,7 +33,7 @@
         <NavbarItem link="/profile/exercise/stats/this-week" isShow={$page.url.pathname.includes("/profile/exercise/stats")}>
             <StatsIcon width="24" height="24" />
         </NavbarItem>
-        <NavbarItem link="" isShow={$page.url.pathname.includes("/profile/exercise/friends")}>
+        <NavbarItem class="opacity-50" link="" isShow={$page.url.pathname.includes("/profile/exercise/friends")}>
             <PeopleIcon width="24" height="24" />
         </NavbarItem>
         <NavbarItem link="/profile/profile-settings" isShow={false}>

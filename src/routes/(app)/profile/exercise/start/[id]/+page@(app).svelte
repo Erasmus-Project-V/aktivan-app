@@ -29,22 +29,37 @@
     let speed = Number(0).toFixed(1);
 
     async function startExercise() {
-        if (watcherId || intervalId) {
+        if (watcherId && intervalId) {
             return;
         }
+        if (watcherId && !intervalId) {
+            await resumeExercise();
+            return;
+        }
+
         await LocalNotifications.requestPermissions();
         await watchLocation();
         if (!watcherId) {
             return;
         }
         startStore.set(DateTime.now().toISO());
-        const firstLocation = await guessLocation(2000);
+        const firstLocation = await guessLocation(5000);
         if (firstLocation) {
             $locationStore.push(firstLocation);
         }
+        trackTime();
+    }
 
+    async function resumeExercise() {
+        trackTime();
+    }
+
+    function trackTime() {
         intervalId = setInterval(() => {
-            timeStore.update(value => value + 1);
+            const diff = DateTime.now().toLocal().diff(DateTime.fromISO($startStore), "seconds").seconds;
+            if (diff >= 1) {
+                timeStore.set(diff);
+            }
         }, 1000);
     }
 
@@ -52,9 +67,22 @@
         if (!intervalId) {
             return;
         }
+        if (watcherId) {
+            await BackgroundGeolocation.removeWatcher({
+                id: watcherId,
+            });
+            await saveExercise();
+            watcherId = null;
+        }
+
+        distanceStore.set(0);
+        stepStore.set(0);
+        locationStore.set([]);
+        timeStore.set(0);
+        caloriesStore.set(0);
         endStore.set(DateTime.now().toISO());
         clearInterval(intervalId);
-        intervalId = null;
+        intervalId = null
     }
 
     async function watchLocation() {
@@ -87,7 +115,7 @@
                 }
                 return;
             }
-            if (currLoc.accuracy >= 10) {
+            if (currLoc.accuracy >= 8) {
                 return;
             }
             if (!currLoc?.speed || currLoc.speed < 0.1) {
@@ -96,7 +124,7 @@
             }
 
             const stepsPerMeter = $stepStore / $distanceStore;
-            speed = (Math.round((currLoc.speed ?? 0) * (isNaN(stepsPerMeter) ? 1 : stepsPerMeter) * 100) / 100).toFixed(1);
+            speed = Math.round((currLoc.speed ?? 0)).toFixed(1);
             if ($locationStore.length > 0) {
                 let distance: number;
                 if (!currLoc.altitude || !$locationStore[$locationStore.length - 1].altitude) {
