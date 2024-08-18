@@ -21,6 +21,7 @@
     import { pb } from "$lib/services/pocketbase";
     import { DateTime } from "luxon";
     import { Geolocation } from "@capacitor/geolocation";
+    import type { RecordModel } from "pocketbase";
 
     const BackgroundGeolocation = registerPlugin<BackgroundGeolocationPlugin>("BackgroundGeolocation");
 
@@ -67,11 +68,13 @@
         if (!intervalId) {
             return;
         }
+        clearInterval(intervalId);
+        intervalId = null;
         if (watcherId) {
             await BackgroundGeolocation.removeWatcher({
                 id: watcherId,
             });
-            await saveExercise();
+            saveExercise().then(activity => saveLocations(activity));
             watcherId = null;
         }
 
@@ -81,8 +84,6 @@
         timeStore.set(0);
         caloriesStore.set(0);
         endStore.set(DateTime.now().toISO());
-        clearInterval(intervalId);
-        intervalId = null
     }
 
     async function watchLocation() {
@@ -124,7 +125,7 @@
             }
 
             const stepsPerMeter = $stepStore / $distanceStore;
-            speed = Math.round((currLoc.speed ?? 0)).toFixed(1);
+            speed = (currLoc.speed ?? 0).toFixed(1);
             if ($locationStore.length > 0) {
                 let distance: number;
                 if (!currLoc.altitude || !$locationStore[$locationStore.length - 1].altitude) {
@@ -170,6 +171,10 @@
             calories: $caloriesStore,
         });
 
+        return activity;
+    }
+
+    async function saveLocations(activity: RecordModel) {
         for (const loc of $locationStore) {
             await pb.collection("locations").create({
                 activity: activity.id,
