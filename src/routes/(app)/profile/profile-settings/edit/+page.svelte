@@ -42,7 +42,7 @@
         const avatarFile = await fetch(avatar.webPath!);
         const avatarBlob = await avatarFile.blob();
 
-        let compressedBlob: Blob;
+        let compressedBlob: Blob | null = null;
 
         try {
             compressedBlob = await compressImage(avatarBlob, 50, 0.5);
@@ -61,66 +61,39 @@
     }
 </script>
 
-<style>
-    .profile-image {
-        width: 150px;
-        height: 150px;
-        border-radius: 50%;
-        overflow: hidden;
-        position: relative;
-    }
-
-    .profile-image img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-
-    .profile-image .camera-icon {
-        position: absolute;
-        bottom: 10px;
-        right: 10px;
-        background-color: #474747;
-        border-radius: 50%;
-        padding: 8px;
-    }
-
-    .profile-image .camera-icon svg {
-        width: 24px;
-        height: 24px;
-        fill: white;
-    }
-
-    .input-container {
-        margin-bottom: 16px;
-    }
-</style>
-
 <div class="bg-black flex flex-col p-4 text-gray-300">
     <BackHeader class="my-6" href="/profile/profile-settings">Edit Profile</BackHeader>
     <div class="relative flex items-center justify-center mb-8">
-        <div class="profile-image relative flex items-center justify-center">
-            <button on:click={async () => await pickAvatar()}>
+        <div class="w-[150px] h-[150px] rounded-full overflow-hidden relative">
+            <button on:click={async () => await pickAvatar()} class="w-full h-full">
                 <Avatar width="160" height="160" src={avatarSrc}></Avatar>
+                <div class="absolute bottom-2.5 right-2.5 bg-[#474747] rounded-full p-2">
+                    <svg class="w-6 h-6 fill-white" viewBox="0 0 24 24">
+                        <path d="M12 15.2a3.2 3.2 0 100-6.4 3.2 3.2 0 000 6.4z"/>
+                        <path d="M9 2L7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-3.17L15 2H9zm3 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/>
+                    </svg>
+                </div>
             </button>
         </div>
     </div>
     <LineSeparator/>
-    <div class="input-container">
-        <label for="username" class="text-[#5FA3C9] mb-1 block">Username</label>
-        <Input className="w-10/12" id="username" class="w-full" type="text" bind:value={username}/>
-    </div>
-    <div class="input-container">
-        <label for="email" class="text-[#5FA3C9] mb-1 block">Email</label>
-        <Input className="w-10/12" id="email" class="w-full" type="text" bind:value={email}/>
-    </div>
-    <div class="input-container">
-        <label for="weight" class="text-[#5FA3C9] mb-1 block">Weight (kg)</label>
-        <Input className="w-10/12" id="weight" class="w-full" type="text" bind:value={weight}/>
-    </div>
-    <div class="input-container">
-        <label for="height" class="text-[#5FA3C9] mb-1 block">Height (cm)</label>
-        <Input className="w-10/12" id="height" class="w-full" type="text" bind:value={height}/>
+    <div class="flex flex-col gap-4">
+        <div>
+            <label for="username" class="text-[#5FA3C9] mb-1 block">Username</label>
+            <Input className="w-10/12" id="username" class="w-full" type="text" bind:value={username}/>
+        </div>
+        <div>
+            <label for="email" class="text-[#5FA3C9] mb-1 block">Email</label>
+            <Input className="w-10/12" id="email" class="w-full" type="text" bind:value={email}/>
+        </div>
+        <div>
+            <label for="weight" class="text-[#5FA3C9] mb-1 block">Weight (kg)</label>
+            <Input className="w-10/12" id="weight" class="w-full" type="text" bind:value={weight}/>
+        </div>
+        <div>
+            <label for="height" class="text-[#5FA3C9] mb-1 block">Height (cm)</label>
+            <Input className="w-10/12" id="height" class="w-full" type="text" bind:value={height}/>
+        </div>
     </div>
     <Button class="self-center mt-5" on:click={async () => await onSave()}>
         <span class="flex flex-row gap-1 items-center justify-center">

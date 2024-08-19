@@ -3,19 +3,23 @@ import { pb } from "$lib/services/pocketbase";
 import { DateTime } from "luxon";
 
 export const load: PageLoad = async ({ params }) => {
-    const currentWeekday = DateTime.now().toLocal().weekday;
+    const now = DateTime.utc();
+    const currentWeekday = now.weekday;
 
-    const firstWeekday = DateTime.now().toLocal().minus({ days: currentWeekday - 1 }).set( { hour: 0, minute: 0, second: 0, millisecond: 0 } );
-    const lastWeekday = DateTime.now().toLocal().plus({ days: 7 - currentWeekday }).set( { hour: 23, minute: 59, second: 59, millisecond: 999 } );
+    const firstWeekday = now.startOf('week');
+    const lastWeekday = now.endOf('week').set({ hour: 23, minute: 59, second: 59 });
+
+    console.log(firstWeekday.toISO());
+    console.log(lastWeekday.toISO());
 
     const activities = await pb.collection("activities").getFullList({
-        filter: `(type="${params.type}" && start>="${firstWeekday.toISODate()}" && start<"${lastWeekday.toISODate()}")`,
+        filter: `(type="${params.type}" && start>="${firstWeekday.toISO()}" && start<="${lastWeekday.toISO()}")`,
         sort: "start",
     });
 
     return {
-        firstWeekday,
-        lastWeekday,
+        firstWeekday: firstWeekday,
+        lastWeekday: lastWeekday,
         activities,
     };
 };

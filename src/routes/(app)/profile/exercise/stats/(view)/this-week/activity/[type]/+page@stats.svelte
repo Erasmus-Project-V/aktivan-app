@@ -68,7 +68,7 @@
 
 <BackNavBar backPath="/profile/exercise/stats/this-week">
     <span slot="first" class="font-semibold">{findExerciseById($page.params.type)?.name}</span>
-    <span slot="second" class="text-blue">{data.firstWeekday.day} {data.firstWeekday.monthShort} - {data.lastWeekday.day - 1} {data.lastWeekday.monthShort}</span>
+    <span slot="second" class="text-blue">{data.firstWeekday.day} {data.firstWeekday.monthShort} - {data.lastWeekday.day} {data.lastWeekday.monthShort}</span>
 </BackNavBar>
 
 <main class="p-4 flex flex-col items-center relative gap-20 overflow-y-auto overflow-x-hidden">

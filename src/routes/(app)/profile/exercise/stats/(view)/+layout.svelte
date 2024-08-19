@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import { Body } from "svelte-body";
     import ExerciseHistoryNavBar from "$lib/components/ExerciseHistoryNavBar.svelte";
     import ExerciseHistoryOption from "$lib/components/ExerciseHistoryOption.svelte";
