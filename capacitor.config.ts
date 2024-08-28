@@ -16,6 +16,19 @@ const config: CapacitorConfig = {
       iconColor: "#488AFF",
       sound: "beep.wav",
     },
+    CapacitorSQLite: {
+      iosDatabaseLocation: "Library/CapacitorDatabase",
+      iosIsEncryption: false,
+      androidIsEncryption: false,
+    },
+    BackgroundRunner: {
+      label: "eu.greenstem.aktivan.timer",
+      src: "src/lib/runners/timer.ts",
+      event: "tick",
+      repeat: true,
+      interval: 0,
+      autoStart: true,
+    }
   },
 };
 

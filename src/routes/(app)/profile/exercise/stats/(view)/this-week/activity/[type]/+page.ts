@@ -3,7 +3,7 @@ import { pb } from "$lib/services/pocketbase";
 import { DateTime } from "luxon";
 
 export const load: PageLoad = async ({ params }) => {
-    const now = DateTime.utc();
+    const now = DateTime.now().toLocal();
     const currentWeekday = now.weekday;
 
     const firstWeekday = now.startOf('week');

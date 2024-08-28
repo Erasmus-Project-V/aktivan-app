@@ -38,7 +38,7 @@
             <span class="text-white opacity-50 text-[0.925rem] font-bold">Hold to finish the exercise</span>
         </div>
     {/if}
-    <ExerciseButton class="{showExitTooltip ? 'bg-warning' : ''} transition-all" on:touchstart={onHold} on:touchend={onRelease} color="red">
+    <ExerciseButton on:click class="{showExitTooltip ? 'bg-warning' : ''} transition-all" on:touchstart={onHold} on:touchend={onRelease} color="red">
         <div class="w-5 h-5 drop-shadow-xl bg-white"></div>
     </ExerciseButton>
 </div>

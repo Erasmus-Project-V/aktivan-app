@@ -11,8 +11,6 @@
     import { fade } from "svelte/transition";
     import { onMount } from "svelte";
 
-    // let selectedExercise: string;
-
     onMount(() => {
         selectedExerciseStore.set(exercises[0]);
     });

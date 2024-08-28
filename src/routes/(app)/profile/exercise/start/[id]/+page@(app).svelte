@@ -4,6 +4,7 @@
     import {
         caloriesStore,
         distanceStore, endStore,
+        isRunningStore,
         locationStore,
         selectedExerciseStore, startStore,
         stepStore,
@@ -13,7 +14,7 @@
     import { Body } from "svelte-body";
     import ExitExerciseButton from "$lib/components/ExitExerciseButton.svelte";
     import type { BackgroundGeolocationPlugin, Location } from "@capacitor-community/background-geolocation";
-    import { registerPlugin } from "@capacitor/core";
+    import { Capacitor, registerPlugin } from "@capacitor/core";
     import { onDestroy, onMount } from "svelte";
     import { LocalNotifications } from "@capacitor/local-notifications";
     import StopExerciseButton from "$lib/components/StopExerciseButton.svelte";
@@ -26,14 +27,13 @@
     const BackgroundGeolocation = registerPlugin<BackgroundGeolocationPlugin>("BackgroundGeolocation");
 
     let watcherId: string | null;
-    let intervalId: any | null;
     let speed = Number(0).toFixed(1);
 
     async function startExercise() {
-        if (watcherId && intervalId) {
+        if (watcherId && $isRunningStore) {
             return;
         }
-        if (watcherId && !intervalId) {
+        if (watcherId && !$isRunningStore) {
             await resumeExercise();
             return;
         }
@@ -56,20 +56,23 @@
     }
 
     function trackTime() {
-        intervalId = setInterval(() => {
-            const diff = DateTime.now().toLocal().diff(DateTime.fromISO($startStore), "seconds").seconds;
-            if (diff >= 1) {
-                timeStore.set(diff);
-            }
-        }, 1000);
+        isRunningStore.set(true);
+        if (Capacitor.getPlatform() === "android") {
+/*             ForegroundService.start({
+                taskName: "aktiVan",
+                taskIcon: "ic_stat_icon_config_sample",
+                taskColor: "#488AFF",
+                taskTitle: "aktiVan",
+                taskText: "aktiVan is tracking your exercise.",
+            }); */
+        }
     }
 
     async function stopExercise() {
-        if (!intervalId) {
+        if (!$isRunningStore) {
             return;
         }
-        clearInterval(intervalId);
-        intervalId = null;
+        isRunningStore.set(false);
         if (watcherId) {
             await BackgroundGeolocation.removeWatcher({
                 id: watcherId,
@@ -84,6 +87,7 @@
         timeStore.set(0);
         caloriesStore.set(0);
         endStore.set(DateTime.now().toISO());
+        isRunningStore.set(false);
     }
 
     async function watchLocation() {
@@ -101,7 +105,7 @@
             stale: false,
             distanceFilter: 0,
         }, (currLoc, err) => {
-            if (!intervalId) {
+            if (!$isRunningStore) {
                 return;
             }
             if (!currLoc || err) {
@@ -158,6 +162,10 @@
         return lastLocation;
     }
 
+    async function pauseExercise() {
+        isRunningStore.set(false);
+    }
+
 
     async function saveExercise() {
         const activity = await pb.collection("activities").create({
@@ -203,6 +211,7 @@
         locationStore.set([]);
         timeStore.set(0);
         caloriesStore.set(0);
+        isRunningStore.set(false);
     });
 
 
@@ -306,11 +315,11 @@
         </ActiveExerciseInfo>
     </div>
     <div class="flex flex-row mt-16 gap-4">
-        {#if intervalId}
-            <StopExerciseButton class="z-10" on:click={async () => await stopExercise()}/>
+        {#if $isRunningStore}
+            <StopExerciseButton class="z-10" on:click={async () => await pauseExercise()}/>
         {:else}
             <StartExerciseButton class="z-10" on:click={async () => await startExercise()}/>
-            <ExitExerciseButton class="z-10"/>
+            <ExitExerciseButton class="z-10" on:click={async () => await stopExercise()} />
         {/if}
     </div>
 </main>

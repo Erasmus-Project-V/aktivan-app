@@ -1,12 +1,19 @@
 <script lang="ts">
     import "../app.css";
-    import { onMount } from "svelte";
-    import { Preferences } from "@capacitor/preferences";
+    import { onDestroy, onMount } from "svelte";
+    import { App } from "@capacitor/app";
+    import { SQLiteService } from "$lib/services/sqlite";
 
     onMount(async () => {
-        const authToken = (await Preferences.get({key: "authToken"})).value;
+        App.addListener("appStateChange", ({ isActive }) => {
+            if (isActive) {
+                SQLiteService.initializeDatabase();
+            }
+        });
+    });
 
-        document.cookie = `authToken=${authToken}`;
+    onDestroy(() => {
+        App.removeAllListeners();
     });
 </script>
 

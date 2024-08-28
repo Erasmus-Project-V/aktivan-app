@@ -5,12 +5,6 @@ import { DateTime } from "luxon";
 export const load: LayoutLoad = async () => {
     const activities = await pb.collection("activities").getFullList();
 
-/*    activities.items.map((activity) => {
-        const newActivity = activity;
-
-        // newActivity.start = new DateTime(activity.start).loc
-    });*/
-
     return {
         activities: activities,
     };

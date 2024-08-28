@@ -15,5 +15,6 @@ const timeStore = writable(0);
 const caloriesStore = writable(0);
 const startStore = writable("");
 const endStore = writable("");
+const isRunningStore = writable(false);
 
-export { signUpDetailsStore, selectedExerciseStore, userStore, distanceStore, locationStore, stepStore, timeStore, caloriesStore, startStore, endStore };
+export { isRunningStore, signUpDetailsStore, selectedExerciseStore, userStore, distanceStore, locationStore, stepStore, timeStore, caloriesStore, startStore, endStore };

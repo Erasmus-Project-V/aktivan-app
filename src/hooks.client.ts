@@ -15,9 +15,8 @@ import type { Handle } from "@sveltejs/kit";
 export const handle: Handle = async ({ event, resolve }) => {
     const authToken = (await Preferences.get({ key: "authToken" })).value;
 
-    // Prosljeđivanje zahtjeva dalje
     const response = await resolve(event);
-    response.headers.set("Cookie", `authToken=${authToken}`);
+    response.headers.set("Set-Cookie", `authToken=${authToken}`);
 
     return response;
 }
