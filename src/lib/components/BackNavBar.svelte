@@ -5,11 +5,10 @@
     import ShareIcon from "$lib/components/icons/ShareIcon.svelte";
 
     export let backPath: string;
-
 </script>
 
 <nav class="w-full font-open-sans text-white h-24 bg-gray rounded-b-3xl flex items-center p-6 justify-between {$$props.class}">
-    <ArrowButton on:click={() => goto(backPath)}>
+    <ArrowButton disabled={false} on:click={async () => await goto(backPath)}>
         <BackArrowIcon/>
     </ArrowButton>
     <span class="font-semibold">

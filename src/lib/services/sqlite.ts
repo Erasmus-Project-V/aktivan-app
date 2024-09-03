@@ -1,6 +1,9 @@
 import { Capacitor } from '@capacitor/core';
 import { CapacitorSQLite, SQLiteConnection, SQLiteDBConnection } from '@capacitor-community/sqlite';
 import { DateTime } from 'luxon';
+import type { Location } from '@capacitor-community/background-geolocation';
+import type { RecordModel } from 'pocketbase';
+import { pb } from './pocketbase';
 
 export class SQLiteService {
     private static sqlite: SQLiteConnection;
@@ -20,6 +23,8 @@ export class SQLiteService {
         SQLiteService.db = await SQLiteService.sqlite.createConnection(SQLiteService.dbName, false, "no-encryption", 3, false);
         await SQLiteService.db?.open();
 
+        console.log("Database initialized", SQLiteService.db.isDBOpen());
+
         // Create a table if it doesn't exist
         const query = `
       CREATE TABLE IF NOT EXISTS activities (
@@ -32,7 +37,7 @@ export class SQLiteService {
         type TEXT,
         calories INTEGER,
         steps INTEGER,
-        distance INTEGER,
+        distance INTEGER
       );
 
       CREATE TABLE IF NOT EXISTS locations (
@@ -59,6 +64,7 @@ export class SQLiteService {
         steps: number;
         distance: number;
     }) {
+        await SQLiteService.initializeDatabase();
         if (!SQLiteService.db) {
             throw new Error('Database not initialized');
         }
@@ -82,6 +88,7 @@ export class SQLiteService {
     }
 
     static async removeActivity(id: number) {
+        await SQLiteService.initializeDatabase();
         if (!SQLiteService.db) {
             throw new Error('Database not initialized');
         }
@@ -99,6 +106,7 @@ export class SQLiteService {
     }
 
     static async getAllActivities() {
+        await SQLiteService.initializeDatabase();
         if (!SQLiteService.db) {
             throw new Error('Database not initialized');
         }
@@ -113,14 +121,74 @@ export class SQLiteService {
         })) || [];
     }
 
-    static async getLocationsForActivity(activityId: number) {
+    static async addLocationForActivity(activityId: number, loc: Location) {
+        await SQLiteService.initializeDatabase();
         if (!SQLiteService.db) {
             throw new Error('Database not initialized');
         }
 
-        const query = `SELECT * FROM locations WHERE activity_id = ? ORDER BY time`;
+        const query = `INSERT INTO locations (activity_id, latitude, longitude, altitude, accuracy, speed, time) VALUES (?, ?, ?, ?, ?, ?, ?)`;
+        const values = [activityId, loc.latitude, loc.longitude, loc.altitude, loc.accuracy, loc.speed, loc.time];
+        const result = await SQLiteService.db.run(query, values);
+        return result.changes?.lastId;
+    }
+
+    static async getLocationsForActivity(activityId: number, limit: number = 100, skip: number = 0) {
+        await SQLiteService.initializeDatabase();
+        if (!SQLiteService.db) {
+            throw new Error('Database not initialized');
+        }
+
+        const query = `SELECT * FROM locations WHERE activity_id = ? ORDER BY time DESC LIMIT ${limit} OFFSET ${skip}`;
         const result = await SQLiteService.db.query(query, [activityId]);
 
         return result.values || [];
+    }
+
+    static async updateActivity(activity: {
+        id: number;
+        start: DateTime;
+        end: DateTime;
+        duration: number;
+        type: string;
+        calories: number;
+        steps: number;
+        distance: number;
+    }) {
+        await SQLiteService.initializeDatabase();
+        if (!SQLiteService.db) {
+            throw new Error('Database not initialized');
+        }
+
+        const query = `UPDATE activities SET start = ?, end = ?, duration = ?, type = ?, calories = ?, steps = ?, distance = ? WHERE id = ?`;
+        const values = [activity.start.toSQL(), activity.end.toSQL(), activity.duration, activity.type, activity.calories, activity.steps, activity.distance, activity.id];
+        const result = await SQLiteService.db.run(query, values);
+        return result.changes?.changes === 1;
+    }
+
+    static async saveLocations(localActivityId: number, activity: RecordModel) {
+        let skip = 0;
+
+        for (;;) {
+            const locations = await SQLiteService.getLocationsForActivity(localActivityId, 100, skip);
+            for (const loc of locations) {
+                await pb.collection("locations").create({
+                    activity: activity.id,
+                    latitude: loc.latitude,
+                    longitude: loc.longitude,
+                    altitude: loc.altitude,
+                    accuracy: loc.accuracy,
+                    speed: loc.speed,
+                    time: loc.time,
+                });
+            }
+            if (!locations || locations.length === 0) {
+                break;
+            }
+
+            skip += 100;
+        }
+
+        SQLiteService.removeActivity(localActivityId);
     }
 }

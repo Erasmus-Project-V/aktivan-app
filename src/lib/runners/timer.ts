@@ -1,4 +1,4 @@
-import { isRunningStore, timeStore } from "$lib/stores";
+/* import { isRunningStore, timeStore } from "$lib/stores";
 import { BackgroundRunner } from "@capacitor/background-runner";
 
 addEventListener("tick", (resolve) => {
@@ -19,4 +19,4 @@ addEventListener("tick", (resolve) => {
         });
         resolve();
     }, 1000);
-});
+}); */

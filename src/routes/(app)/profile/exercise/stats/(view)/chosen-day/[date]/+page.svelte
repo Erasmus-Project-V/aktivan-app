@@ -26,6 +26,7 @@
             console.log(activityDate);
             return activityDate.day === selectedDay && activityDate.month === selectedMonth && activityDate.year === selectedYear;
         });
+        activities = activities.toSorted((a, b) => DateTime.fromSQL(b.start).diff(DateTime.fromSQL(a.start)).toMillis());
         console.log(activities);
         console.log(`Activities: ${activities.length}`)
 

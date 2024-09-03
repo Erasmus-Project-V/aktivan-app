@@ -24,15 +24,18 @@
     let duration: any;
 
     onMount(() => {
-        duration = DateTime.fromSQL(activity?.end)?.toLocal()?.diff(DateTime.fromSQL(activity.start).toLocal(), ["hours", "minutes", "seconds"]).toFormat("hh:mm:ss");
+        duration = DateTime.fromSQL(activity?.start)?.diff(DateTime.fromSQL(activity?.end), ["hours", "minutes", "seconds"]).toFormat("hh:mm:ss");
+        console.log(duration);
     });
 
-
     function mapLocationsToCoordinates(locations: any) {
-        return locations.map((location: any) => {
+        if (!locations) {
+            return [];
+        }
+        return locations?.map((location: any) => {
             return {
-                latitude: location.latitude,
-                longitude: location.longitude
+                latitude: location?.latitude,
+                longitude: location?.longitude
             };
         });
     }
@@ -65,9 +68,10 @@
 </BackNavBar>
 
 <main class="h-screen w-screen flex flex-col items-center gap-12 overflow-auto">
-    <ExerciseMap coordinates={coordinates} class="mt-6 rounded-2xl min-h-52 w-11/12"></ExerciseMap>
-    <!--        <img src={$selectedExerciseStore.background} class="w-screen h-screen absolute opacity-15" alt="A person exercising on a hill">-->
-    <div>
+    {#if coordinates.length > 0}
+        <ExerciseMap coordinates={coordinates} class="rounded-2xl mt-6 min-h-52 w-11/12" />
+    {/if}
+    <div class:mt-6={coordinates.length === 0}>
         {#if findExerciseById(activity?.type)?.showSteps}
             <ActiveExerciseInfo size="lg">
                 <span>{activity?.steps ?? 0}</span>
