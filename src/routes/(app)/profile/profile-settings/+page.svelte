@@ -112,6 +112,10 @@
             Settings
             <ArrowRightIcon slot="icon"/>
         </MenuButton>
+        <MenuButton on:click={() => goto("/profile/profile-settings/awards")}>
+            Awards
+            <ArrowRightIcon slot="icon"/>
+        </MenuButton>
         <MenuButton on:click={signOut}>
           <span class="text-warning">
             Sign Out
