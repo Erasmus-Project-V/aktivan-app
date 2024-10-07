@@ -24,7 +24,7 @@
     let duration: any;
 
     onMount(() => {
-        duration = DateTime.fromSQL(activity?.start)?.diff(DateTime.fromSQL(activity?.end), ["hours", "minutes", "seconds"]).toFormat("hh:mm:ss");
+        duration = DateTime.fromSQL(activity?.end)?.diff(DateTime.fromSQL(activity?.start), ["hours", "minutes", "seconds"]).toFormat("hh:mm:ss");
         console.log(duration);
     });
 

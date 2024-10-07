@@ -10,11 +10,11 @@
 
     let passwordHidden = true;
 
-    let identity: string = "Optimus";
-    let password: string = "12345678";
+    let identity: string;
+    let password: string;
 
     let alert: Alert;
-    
+
     function togglePassword() {
         passwordHidden = !passwordHidden;
     }
@@ -40,7 +40,7 @@
 </svelte:head>
 
 <div class="z-10">
-    <img src={bg} alt="A man running.">
+    <img src={bg} class="w-screen" alt="A man running.">
 </div>
 
 <main class="mt-5">

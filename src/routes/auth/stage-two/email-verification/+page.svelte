@@ -34,8 +34,8 @@
     <BackButton on:click={back} />
     <h1 class="text-white font-sans text-2xl mt-20">Open the link that was sent to you via email</h1>
 
-    <div class="mt-36">
+    <!-- <div class="mt-36">
         <p class="text-lightblue text-xs font-semibold">Click here after confirming your account</p>
         <Button class="w-72 h-11 mt-5">Continue</Button>
-    </div>
+    </div> -->
 </main>

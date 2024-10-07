@@ -37,6 +37,7 @@
                 });
 
                 await SQLiteService.saveLocations(activity.id, remoteActivity);
+                await SQLiteService.removeActivity(activity.id);
             }
         });
     });

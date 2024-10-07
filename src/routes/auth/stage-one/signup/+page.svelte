@@ -21,10 +21,10 @@
     let confirmPasswordHidden = true;
 
     //TODO: Remove defaults
-    let username: string = "Optimus";
-    let email: string = "karlo.vizec45@gmail.com";
-    let password = "12345678";
-    let confirmPassword = "12345678";
+    let username: string;
+    let email: string;
+    let password: string;
+    let confirmPassword: string;
 
     let alerts: StageOneSignUpAlerts = {
         username: {} as Alert,
@@ -106,7 +106,7 @@
 </svelte:head>
 
 <div class="z-10">
-    <img src={bg} alt="A man running.">
+    <img src={bg} class="w-screen" alt="A man running.">
 </div>
 
 <main class="mt-5">
@@ -122,4 +122,3 @@
         </Button>
     </form>
 </main>
-

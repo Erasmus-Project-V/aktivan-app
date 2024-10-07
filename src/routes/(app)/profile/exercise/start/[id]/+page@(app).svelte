@@ -204,23 +204,23 @@
         });
     }
 
-    async function guessLocation(timeout: number): Promise<Location | undefined> {
-        let lastLocation: Location | undefined;
-        const id = await BackgroundGeolocation.addWatcher(
-            {
-                requestPermissions: false,
-                stale: true
-            },
-            (location) => {
-                lastLocation = location || undefined;
-            }
-        );
-        setTimeout(async () => {
-            await BackgroundGeolocation.removeWatcher({id});
-        }, timeout);
+    // async function guessLocation(timeout: number): Promise<Location | undefined> {
+    //     let lastLocation: Location | undefined;
+    //     const id = await BackgroundGeolocation.addWatcher(
+    //         {
+    //             requestPermissions: false,
+    //             stale: true
+    //         },
+    //         (location) => {
+    //             lastLocation = location || undefined;
+    //         }
+    //     );
+    //     setTimeout(async () => {
+    //         await BackgroundGeolocation.removeWatcher({id});
+    //     }, timeout);
 
-        return lastLocation;
-    }
+    //     return lastLocation;
+    // }
 
     async function pauseExercise() {
         isRunningStore.set(false);

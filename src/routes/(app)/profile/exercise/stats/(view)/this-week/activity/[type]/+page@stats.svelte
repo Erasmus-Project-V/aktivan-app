@@ -30,6 +30,7 @@
             const start = DateTime.fromSQL(activity.start).toLocal();
             perDay.set(start.weekdayShort!, (perDay.get(start.weekdayShort!) ?? 0) + activity.distance);
         });
+        console.log(data.activities);
 
         new Chart(canvas, {
             type: 'line',
