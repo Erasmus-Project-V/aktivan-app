@@ -8,8 +8,11 @@ import type { LayoutLoad } from "./$types";
 import { Preferences } from "@capacitor/preferences";
 import { userStore } from "$lib/stores";
 import { removePreferences, signOut } from "$lib/services/auth";
+import { SplashScreen } from "@capacitor/splash-screen";
 
 export const load: LayoutLoad = async ({ url }) => {
+  // await SplashScreen.show();
+
   const authToken = (await Preferences.get({ key: "authToken" })).value;
   const userId = (await Preferences.get({ key: "userId" })).value;
 
@@ -17,6 +20,7 @@ export const load: LayoutLoad = async ({ url }) => {
     console.log(`User id: ${userId}`);*/
 
   if (!authToken && !url.pathname.includes("/auth/")) {
+    // SplashScreen.hide();
     redirect(307, "/auth/stage-one/login");
   }
   if (authToken) {
@@ -34,11 +38,15 @@ export const load: LayoutLoad = async ({ url }) => {
       userStore.set(user);
       pb.authStore.save(authToken, user);
       if (!pb.authStore.model?.verified) {
+        // SplashScreen.hide();
         redirect(307, "/auth/stage-two/email-verification");
       }
       if (!url.pathname.includes("/profile")) {
+        // SplashScreen.hide();
         redirect(307, "/profile/exercise");
       }
     }
   }
+
+  // SplashScreen.hide();
 };

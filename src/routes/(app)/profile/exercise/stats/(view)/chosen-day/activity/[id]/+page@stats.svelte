@@ -92,21 +92,21 @@
     </div>-->
     <div class="grid grid-cols-2 gap-8 mb-10">
         <ActiveExerciseInfo size="md">
-            <span>{duration}</span>
+            <span>{duration || 0}</span>
             <span slot="unit">Duration</span>
         </ActiveExerciseInfo>
         {#if findExerciseById(activity?.type)?.showSteps}
             <ActiveExerciseInfo size="md">
-                <span>{Math.round(activity?.distance) ?? 0}</span>
+                <span>{Math.round(activity?.distance) || 0}</span>
                 <span slot="unit">Meters</span>
             </ActiveExerciseInfo>
         {/if}
         <ActiveExerciseInfo size="md">
-            <span>{Number(activity?.distance / activity?.duration).toFixed(1) ?? 0}</span>
+            <span>{isNaN(activity?.distance / activity?.duration) ? 0 : ((activity?.distance / activity?.duration).toFixed(1))}</span>
             <span slot="unit">Tempo</span>
         </ActiveExerciseInfo>
         <ActiveExerciseInfo size="md" class="{findExerciseById(activity?.type)?.showSteps ? '' : 'col-span-2 justify-self-center'}">
-            <span>{Math.round(activity?.calories) ?? 0}</span>
+            <span>{Math.round(activity?.calories) || 0}</span>
             <span slot="unit">Calories</span>
         </ActiveExerciseInfo>
     </div>
