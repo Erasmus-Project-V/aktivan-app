@@ -1,4 +1,4 @@
-import type { CapacitorConfig } from '@capacitor/cli';
+import type { CapacitorConfig } from "@capacitor/cli";
 
 const config: CapacitorConfig = {
   appId: "eu.greenstem.aktivan",
@@ -28,7 +28,11 @@ const config: CapacitorConfig = {
       repeat: true,
       interval: 0,
       autoStart: true,
-    }
+    },
+    SplashScreen: {
+      launchAutoHide: false,
+      showSpinner: true,
+    },
   },
 };
 

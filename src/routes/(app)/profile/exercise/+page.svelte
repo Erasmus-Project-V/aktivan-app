@@ -5,7 +5,7 @@
     import RightArrowIcon from "$lib/components/icons/RightArrowIcon.svelte";
     import ExerciseSelector from "$lib/components/ExerciseSelector.svelte";
     import { exercises } from "$lib/types/exercises";
-    import { selectedExerciseStore } from "$lib/stores";
+    import { isLoadingStore, selectedExerciseStore } from "$lib/stores";
     import { goto } from "$app/navigation";
     import { quintOut } from "svelte/easing";
     import { fade } from "svelte/transition";
@@ -13,6 +13,8 @@
 
     onMount(() => {
         selectedExerciseStore.set(exercises[0]);
+
+        isLoadingStore.set(false);
     });
 </script>
 
@@ -31,4 +33,3 @@
         <RightArrowIcon slot="icon" />
     </Button>
 </div>
-

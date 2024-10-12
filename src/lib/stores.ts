@@ -20,3 +20,6 @@ export const isRunningStore = writable(false);
 export const pauseStartStore = writable<DateTime>();
 export const totalPausedSecondsStore = writable(0);
 export const currentActivityIdStore = writable(0);
+export const isUploadingExerciseStore = writable(false);
+
+export const isLoadingStore = writable(true);

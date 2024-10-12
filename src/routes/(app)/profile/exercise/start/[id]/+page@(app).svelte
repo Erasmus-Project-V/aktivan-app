@@ -6,6 +6,7 @@
         currentActivityIdStore,
         distanceStore, endStore,
         isRunningStore,
+        isUploadingExerciseStore,
         locationStore,
         pauseStartStore,
         selectedExerciseStore, startStore,
@@ -96,10 +97,13 @@
         endStore.set(DateTime.now().toISO());
         isRunningStore.set(false);
         if (watcherId) {
-            saveExercise().then(activity => SQLiteService.saveLocations($currentActivityIdStore, activity!));
             await BackgroundGeolocation.removeWatcher({
                 id: watcherId,
             });
+
+            const activity = await saveExercise()
+            await SQLiteService.saveLocations($currentActivityIdStore, activity!);
+            isUploadingExerciseStore.set(false);
             watcherId = null;
             clearInterval(intervalId);
         }
@@ -229,13 +233,29 @@
 
 
     async function saveExercise() {
-        await saveAllLocationsLocally();
+        console.log('Exercise stores:');
+      console.log('Calories:', $caloriesStore);
+      console.log('Current Activity ID:', $currentActivityIdStore);
+      console.log('Distance:', $distanceStore);
+      console.log('End:', $endStore);
+      console.log('Is Running:', $isRunningStore);
+      console.log('Location:', $locationStore);
+      console.log('Pause Start:', $pauseStartStore);
+      console.log('Selected Exercise:', $selectedExerciseStore);
+      console.log('Start:', $startStore);
+      console.log('Steps:', $stepStore);
+      console.log('Time:', $timeStore);
+      console.log('Total Paused Seconds:', $totalPausedSecondsStore);
         await saveActivityLocally();
+        await saveAllLocationsLocally();
+        console.log("Added locations locally")
 
         const networkStatus = await Network.getStatus();
         if (!networkStatus.connected) {
             return;
         }
+
+        isUploadingExerciseStore.set(true);
 
         const activity = await pb.collection("activities").create({
             user: $userStore?.id,
@@ -375,7 +395,7 @@
             <StopExerciseButton class="z-10" on:click={async () => await pauseExercise()}/>
         {:else}
             <StartExerciseButton class="z-10" on:click={async () => await startExercise()}/>
-            <ExitExerciseButton class="z-10" on:click={() => stopExercise()}/>
+            <ExitExerciseButton class="z-10" on:click={async () => await stopExercise()}/>
         {/if}
     </div>
 </main>

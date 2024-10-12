@@ -4,10 +4,17 @@
     import { App } from "@capacitor/app";
     import { SQLiteService } from "$lib/services/sqlite";
     import { Network } from "@capacitor/network";
-    import { userStore } from "$lib/stores";
+    import { isLoadingStore, isUploadingExerciseStore, userStore } from "$lib/stores";
     import { pb } from "$lib/services/pocketbase";
+    import { SplashScreen } from "@capacitor/splash-screen";
 
     onMount(async () => {
+        const unsubscribe = isLoadingStore.subscribe(loading => {
+          if (!loading) {
+            SplashScreen.hide();
+          }
+        });
+
         await App.addListener("appStateChange", async ({ isActive }) => {
             if (isActive) {
                 await SQLiteService.initializeDatabase();
@@ -15,31 +22,48 @@
         });
 
         Network.addListener("networkStatusChange", async (status) => {
-            if (!status.connected) {
-                return;
+          if (!status.connected) {
+            return;
+          }
+
+          if ($isUploadingExerciseStore) {
+            return;
+          }
+
+          try {
+            const activities = await SQLiteService.getAllActivities();
+            if (!activities || activities.length === 0) {
+              return;
             }
 
-            const activites = await SQLiteService.getAllActivities();
-            if (!activites || (activites as [])?.length === 0) {
-                return;
-            }
-
-            for (const activity of activites) {
+            for (const activity of activities) {
+              try {
                 const remoteActivity = await pb.collection("activities").create({
-                    user: $userStore?.id,
-                    start: activity.start,
-                    end: activity.end,
-                    distance: activity.end,
-                    steps: activity.steps,
-                    duration: activity.duration,
-                    type: activity.type,
-                    calories: activity.calories,
+                  user: $userStore?.id,
+                  start: activity.start,
+                  end: activity.end,
+                  distance: Math.round(activity.distance),
+                  steps: Math.round(activity.steps),
+                  duration: Math.round(activity.duration),
+                  type: activity.type,
+                  calories: Math.round(activity.calories),
                 });
 
-                await SQLiteService.saveLocations(activity.id, remoteActivity);
-                await SQLiteService.removeActivity(activity.id);
+                if (remoteActivity) {
+                  await SQLiteService.saveLocations(activity.id, remoteActivity);
+                }
+              } catch (error) {
+                console.error("Error saving activity:", error);
+              }
             }
+          } catch (error) {
+            console.error("Error processing activities:", error);
+          }
         });
+
+        return () => {
+          unsubscribe();
+        }
     });
 </script>
 

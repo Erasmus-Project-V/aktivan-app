@@ -7,6 +7,8 @@
     import { signIn } from "$lib/services/auth";
     import { goto } from "$app/navigation";
     import { type Alert, AlertType } from "$lib/types/components";
+    import { onMount } from "svelte";
+    import { isLoadingStore } from "$lib/stores";
 
     let passwordHidden = true;
 
@@ -14,6 +16,10 @@
     let password: string;
 
     let alert: Alert;
+
+    onMount(() => {
+        isLoadingStore.set(false);
+    });
 
     function togglePassword() {
         passwordHidden = !passwordHidden;
