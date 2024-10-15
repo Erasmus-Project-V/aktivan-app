@@ -21,45 +21,45 @@
             }
         });
 
-        Network.addListener("networkStatusChange", async (status) => {
-          if (!status.connected) {
-            return;
-          }
+        // Network.addListener("networkStatusChange", async (status) => {
+        //   if (!status.connected) {
+        //     return;
+        //   }
 
-          if ($isUploadingExerciseStore) {
-            return;
-          }
+        //   if ($isUploadingExerciseStore) {
+        //     return;
+        //   }
 
-          try {
-            const activities = await SQLiteService.getAllActivities();
-            if (!activities || activities.length === 0) {
-              return;
-            }
+        //   try {
+        //     const activities = await SQLiteService.getAllActivities();
+        //     if (!activities || activities.length === 0) {
+        //       return;
+        //     }
 
-            for (const activity of activities) {
-              try {
-                const remoteActivity = await pb.collection("activities").create({
-                  user: $userStore?.id,
-                  start: activity.start,
-                  end: activity.end,
-                  distance: Math.round(activity.distance),
-                  steps: Math.round(activity.steps),
-                  duration: Math.round(activity.duration),
-                  type: activity.type,
-                  calories: Math.round(activity.calories),
-                });
+        //     for (const activity of activities) {
+        //       try {
+        //         const remoteActivity = await pb.collection("activities").create({
+        //           user: $userStore?.id,
+        //           start: activity.start,
+        //           end: activity.end,
+        //           distance: Math.round(activity.distance),
+        //           steps: Math.round(activity.steps),
+        //           duration: Math.round(activity.duration),
+        //           type: activity.type,
+        //           calories: Math.round(activity.calories),
+        //         });
 
-                if (remoteActivity) {
-                  await SQLiteService.saveLocations(activity.id, remoteActivity);
-                }
-              } catch (error) {
-                console.error("Error saving activity:", error);
-              }
-            }
-          } catch (error) {
-            console.error("Error processing activities:", error);
-          }
-        });
+        //         if (remoteActivity) {
+        //           await SQLiteService.saveLocations(activity.id, remoteActivity);
+        //         }
+        //       } catch (error) {
+        //         console.error("Error saving activity:", error);
+        //       }
+        //     }
+        //   } catch (error) {
+        //     console.error("Error processing activities:", error);
+        //   }
+        // });
 
         return () => {
           unsubscribe();

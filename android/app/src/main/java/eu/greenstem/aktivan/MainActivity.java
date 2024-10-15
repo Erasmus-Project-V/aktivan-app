@@ -1,4 +1,4 @@
-package com.optimuseprime.cap;
+package eu.greenstem.aktivan;
 
 import com.getcapacitor.BridgeActivity;
 
