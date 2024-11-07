@@ -20,7 +20,7 @@
     let passwordHidden = true;
     let confirmPasswordHidden = true;
 
-    //TODO: Remove defaults
+    // TODO: Remove defaults
     let username: string;
     let email: string;
     let password: string;
@@ -34,8 +34,20 @@
     };
 
     function validateSignUpData(): boolean {
+        // Reset username alert
+        alerts.username = {} as Alert;
+
+        // Check if username length exceeds 16 characters
+        if (username.length > 16) {
+            alerts.username = {
+                text: "Username cannot exceed 16 characters",
+                type: AlertType.WARNING
+            };
+            return false;
+        }
+
         try {
-            validateStageOneSignUpData({ username, email, password, confirmPassword })
+            validateStageOneSignUpData({ username, email, password, confirmPassword });
         } catch (err) {
             if (err instanceof z.ZodError) {
                 for (const issue of err.errors) {
@@ -43,7 +55,6 @@
                         text: issue.message,
                         type: AlertType.WARNING
                     } as Alert;
-                    alerts = alerts;
                 }
             }
             return false;
@@ -69,22 +80,16 @@
             await dryCreateUser(username, email, confirmPassword);
         } catch (err) {
             if (err === UsernameAlreadyTakenErr) {
-                alerts = {
-                    ...alerts,
-                    username: {
-                        text: "Username already taken",
-                        type: AlertType.WARNING
-                    },
+                alerts.username = {
+                    text: "Username already taken",
+                    type: AlertType.WARNING
                 };
                 return;
             }
             if (err === EmailAlreadyTakenErr) {
-                alerts = {
-                    ...alerts,
-                    email: {
-                        text: "Email already taken",
-                        type: AlertType.WARNING
-                    },
+                alerts.email = {
+                    text: "Email already taken",
+                    type: AlertType.WARNING
                 };
                 return;
             }
