@@ -1,9 +1,7 @@
 <script lang="ts">
     import ExerciseCard from "$lib/components/ExerciseCard.svelte";
     import ChosenDayExerciseBlock from "$lib/components/ChosenDayExerciseBlock.svelte";
-    import type {
-        LayoutData
-    } from "./$types";
+    import type { LayoutData } from "./$types";
     import { DateTime } from "luxon";
     import { page } from "$app/stores";
     import { onMount } from "svelte";
@@ -12,37 +10,30 @@
     export let data: LayoutData;
 
     let activities: Array<any> = [];
-
     let perType: Map<string, { meters: number; calories: number; }> = new Map();
 
-    onMount(() => {
-        let selectedDay = +$page.params.date?.split("-")[0];
-        let selectedMonth = +$page.params.date?.split("-")[1];
-        let selectedYear = +$page.params.date?.split("-")[2];
+    $: {
+        if (data.activities && $page.params.date) {
+            let selectedDay = +$page.params.date?.split("-")[0];
+            let selectedMonth = +$page.params.date?.split("-")[1];
+            let selectedYear = +$page.params.date?.split("-")[2];
 
-        console.log(data.activities);
-        activities = data.activities.filter((activity: any) => {
-            const activityDate = DateTime.fromSQL(activity.start);
-            console.log(activityDate);
-            return activityDate.day === selectedDay && activityDate.month === selectedMonth && activityDate.year === selectedYear;
-        });
-        activities = activities.toSorted((a, b) => DateTime.fromSQL(b.start).diff(DateTime.fromSQL(a.start)).toMillis());
-        console.log(activities);
-        console.log(`Activities: ${activities.length}`)
+            activities = data.activities.filter((activity: any) => {
+                const activityDate = DateTime.fromSQL(activity.start);
+                return activityDate.day === selectedDay && activityDate.month === selectedMonth && activityDate.year === selectedYear;
+            });
+            activities = activities.toSorted((a, b) => DateTime.fromSQL(b.start).diff(DateTime.fromSQL(a.start)).toMillis());
 
-        for (const activity of activities) {
-            if (!perType.get(activity.type)) {
-                perType.set(activity.type, { meters: 0, calories: 0 });
+            perType.clear();
+            for (const activity of activities) {
+                if (!perType.get(activity.type)) {
+                    perType.set(activity.type, { meters: 0, calories: 0 });
+                }
+                perType.get(activity.type)!.meters += activity.distance;
+                perType.get(activity.type)!.calories += activity.calories;
             }
-            console.log(activity);
-            // perType.set(activity.type, { meters: activity.distance + , calories: 0 });
-            perType.get(activity.type).meters += activity.distance;
-            perType.get(activity.type).calories += activity.calories;
         }
-
-        perType = perType;
-        console.log(`Per type: ${perType}`);
-    });
+    }
 
     function findNameById(id: string) {
         return exercises.find(exercise => exercise.id === id)?.name ?? id;
