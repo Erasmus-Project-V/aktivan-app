@@ -16,7 +16,11 @@
 
         isLoadingStore.set(false);
     });
-</script>
+
+    function onStart() {
+        goto("/profile/exercise/start/test");
+    }
+  </script>
 
 <Body class="overflow-y-hidden"/>
 
@@ -28,7 +32,7 @@
 
     <ExerciseSelector class="absolute bottom-48" {exercises} bind:selectedExercise={$selectedExerciseStore} selectedExerciseIdx={1} />
 
-    <Button on:click={() => goto("/profile/exercise/start/test")} class="absolute bottom-[6.5rem]">
+    <Button on:click={onStart} class="absolute bottom-[6.5rem]">
         <span class="uppercase">Start</span>
         <RightArrowIcon slot="icon" />
     </Button>

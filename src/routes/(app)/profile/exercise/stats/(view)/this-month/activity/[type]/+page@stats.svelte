@@ -10,6 +10,8 @@
     import { exercises } from "$lib/types/exercises";
     import { page } from "$app/stores";
 
+    import ExerciseCard from "$lib/components/ExerciseCard.svelte";
+
     export let data: PageData;
 
     let perDay: Map<number, number> = new Map();
@@ -76,11 +78,25 @@
     <span slot="second" class="text-blue">{data.firstDayInMonth.day} {data.firstDayInMonth.monthShort} - {data.lastDayInMonth.day} {data.lastDayInMonth.monthShort}</span>
 </BackNavBar>
 
-<main class="p-4 flex flex-col items-center relative gap-20 overflow-y-auto overflow-x-hidden">
+<main class="p-4 flex flex-col items-center relative gap-20 overflow-x-hidden overflow-y-auto">
     <img src={findExerciseById($page.params.type)?.squareBackground} alt="A person doing exercise." class="w-10/12">
     <div class="bg-gray rounded-3xl bg-opacity-60 w-11/12 h-72 z-10 absolute mt-24"></div>
     <TwoBlockExerciseInfo class="self-start" blockOneUnit="Meters" blockOneValue={Math.round(totalDistance)} blockTwoUnit="Calories"
                           blockTwoValue={Math.round(totalCalories)}/>
     <span class="p-3 self-start mt-32 absolute z-20 text-white text-opacity-30 font-open-sans font-semibold uppercase">Meters</span>
     <canvas bind:this={canvas} class="p-3 w-10/12 h-64 mt-44 absolute z-20"></canvas>
+
+    {#if data.activities && data.activities.length > 0}
+        <div class="text-white text-base font-semibold flex flex-col justify-center gap-2 w-full h-fit overflow-y-auto pb-20 -mt-16">
+            <span>Exercise history</span>
+            {#each data.activities as activity}
+                <ExerciseCard
+                    id={activity.id}
+                    exerciseName={findExerciseById(activity.type)?.name ?? activity.type}
+                    time={`${DateTime.fromSQL(activity.start).toLocal().day} ${DateTime.fromSQL(activity.start).toLocal().monthShort} ${DateTime.fromSQL(activity.start).toLocal().hour.toString().padStart(2, "0")}:${DateTime.fromSQL(activity.start).toLocal().minute.toString().padStart(2, "0")}`}
+                />
+            {/each}
+        </div>
+    {/if}
+
 </main>

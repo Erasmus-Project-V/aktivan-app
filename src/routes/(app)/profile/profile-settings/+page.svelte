@@ -10,6 +10,7 @@
     import { userStore } from "$lib/stores";
     import { signOut } from "$lib/services/auth";
     import { goto } from "$app/navigation";
+    import { DateTime } from "luxon";
 
     const progressValue = writable(72);
     const levelValue = writable(1);
@@ -88,7 +89,7 @@
         <div class="flex items-center w-full px-4">
             <Avatar src={avatarSrc} width="160" height="160" />
             <div class="vertical-line"></div>
-            <p class="text-gray-400">Joined July 2024</p>
+            <p class="text-gray-400">Joined {DateTime.fromSQL($userStore?.created).toLocal().monthLong} {DateTime.fromSQL($userStore?.created).toLocal().year}</p>
         </div>
 <!--        <div class="progress-container">
 

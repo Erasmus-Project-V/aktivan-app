@@ -61,7 +61,7 @@
 
 <Body class="overflow-hidden" />
 
-<BackNavBar backPath="/profile/exercise/stats/chosen-day">
+<BackNavBar backPath="/profile/exercise/stats/">
     <span slot="first" class="font-semibold">{activityName}</span>
     <span slot="second" class="text-blue">{activityDuration}</span>
     <ShareIcon slot="icon" />

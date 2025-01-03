@@ -23,10 +23,10 @@
     <link rel="preload" as="image" href={avatarSrc}>
 </svelte:head>
 
-<main class="w-screen h-screen flex-1 justify-evenly items-center overflow-hidden">
+<main class="w-screen h-screen flex-1 justify-evenly items-center overflow-scroll">
     <slot />
 
-    <Navbar class="absolute bottom-0 h-fit">
+    <Navbar class="absolute bottom-0">
         <NavbarItem link="/profile/exercise" isShow={$page.url.pathname === "/profile/exercise"}>
             <HomeIcon width="24" height="24" />
         </NavbarItem>

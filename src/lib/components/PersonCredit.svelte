@@ -3,7 +3,7 @@
     export let name: string;
 </script>
 
-<div>
+<div class="font-advent">
     <span class="flex items-center justify-center relative mb-2">
         {role}
     </span>

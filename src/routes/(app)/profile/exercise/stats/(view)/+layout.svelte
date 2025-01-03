@@ -6,16 +6,18 @@
 
 <Body class="overflow-y-hidden"/>
 
-<ExerciseHistoryNavBar>
-    <ExerciseHistoryOption link="/profile/exercise/stats/this-week">
-        This week
-    </ExerciseHistoryOption>
-    <ExerciseHistoryOption link="/profile/exercise/stats/chosen-day">
-        Chosen day
-    </ExerciseHistoryOption>
-    <ExerciseHistoryOption link="/profile/exercise/stats/this-month">
-        This month
-    </ExerciseHistoryOption>
-</ExerciseHistoryNavBar>
+<div class="">
+    <ExerciseHistoryNavBar>
+        <ExerciseHistoryOption link="/profile/exercise/stats/this-week">
+            This week
+        </ExerciseHistoryOption>
+        <ExerciseHistoryOption link="/profile/exercise/stats/chosen-day">
+            Chosen day
+        </ExerciseHistoryOption>
+        <ExerciseHistoryOption link="/profile/exercise/stats/this-month">
+            This month
+        </ExerciseHistoryOption>
+    </ExerciseHistoryNavBar>
+</div>
 
 <slot/>

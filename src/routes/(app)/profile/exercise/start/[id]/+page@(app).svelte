@@ -29,14 +29,30 @@
     import type { RecordModel } from "pocketbase";
     import { SQLiteService } from "$lib/services/sqlite";
     import { Network } from "@capacitor/network";
+    import { Pedometer } from "capacitor-pedometer";
+    import AlertDialog from "$lib/components/AlertDialog.svelte";
 
     const BackgroundGeolocation = registerPlugin<BackgroundGeolocationPlugin>("BackgroundGeolocation");
 
     let watcherId: string | null;
     let intervalId: any;
     let speed = Number(0).toFixed(1);
+    let isLocationAcquired = false;
+    let isAlertOpen = false;
+    let alertTitle: string;
+    let alertDescription: string;
+
+    let lastLocationTime: DateTime;
 
     async function startExercise() {
+        const isConnected = (await Network.getStatus()).connected;
+
+        if (!isConnected) {
+            alertTitle = "No internet connection";
+            alertDescription = "You must be connected to the internet to start an exercise.";
+            isAlertOpen = true;
+            return;
+        }
         if (watcherId && $isRunningStore) {
             return;
         }
@@ -46,17 +62,18 @@
         }
 
         isRunningStore.set(true);
+        await Pedometer.requestPermissions();
         await LocalNotifications.requestPermissions();
         await watchLocation();
         if (!watcherId) {
             return;
         }
-        startStore.set(DateTime.now().toISO());
 /*         const firstLocation = await guessLocation(5000);
         if (firstLocation) {
             $locationStore.push(firstLocation);
         } */
         trackTime();
+        await trackSteps();
         $currentActivityIdStore = await SQLiteService.addActivity({
             start: DateTime.now(),
             end: DateTime.now(),
@@ -66,7 +83,10 @@
             steps: 0,
             distance: 0,
         }) ?? 0;
-        alert("Please wait until we acquire your location.");
+
+        alertTitle = "Please wait";
+        alertDescription = "We're acquiring your location.";
+        isAlertOpen = true;
     }
 
     async function resumeExercise() {
@@ -75,8 +95,26 @@
         isRunningStore.set(true);
     }
 
+    async function trackSteps() {
+        if (!$selectedExerciseStore.showSteps) {
+            return;
+        }
+
+        // await Pedometer.requestPermission();
+        await Pedometer.checkPermissions();
+        console.log(await Pedometer.isAvailable());
+/*        if (!(await Pedometer.isAvailable()).available) {
+            alert("Pedometer is not available.");
+            return;
+        }*/
+        await Pedometer.start();
+    }
+
     function trackTime() {
         intervalId = setInterval(() => {
+            if (!isLocationAcquired) {
+                return;
+            }
             if (!$isRunningStore) {
                 return;
             }
@@ -89,31 +127,55 @@
         }, 1000);
     }
 
+    let isSaving = false;
+
     async function stopExercise() {
-        if (!watcherId) {
+        if (!watcherId || isSaving) {
             return;
         }
 
-        endStore.set(DateTime.now().toISO());
-        isRunningStore.set(false);
-        if (watcherId) {
+        try {
+            isSaving = true;
+            endStore.set(DateTime.now().toISO());
+            isRunningStore.set(false);
+
             await BackgroundGeolocation.removeWatcher({
                 id: watcherId,
             });
 
-            const activity = await saveExercise()
-            await SQLiteService.saveLocations($currentActivityIdStore, activity!);
-            isUploadingExerciseStore.set(false);
+            const currId = $currentActivityIdStore;
+            saveExercise(
+              $caloriesStore,
+              currId,
+              $distanceStore,
+              $startStore,
+              $endStore,
+              $locationStore,
+              $selectedExerciseStore,
+              $stepStore,
+              $timeStore,
+              $userStore?.id
+            ).then(activity => {
+              SQLiteService.saveLocations(currId, activity!).then(() => {
+                isUploadingExerciseStore.set(false);
+                isSaving = false;
+              });
+            });
+            await Pedometer.stop();
             watcherId = null;
             clearInterval(intervalId);
-        }
 
-        distanceStore.set(0);
-        stepStore.set(0);
-        locationStore.set([]);
-        timeStore.set(0);
-        caloriesStore.set(0);
-        isRunningStore.set(false);
+            // Reset stores
+            //             distanceStore.set(0);
+            stepStore.set(0);
+            locationStore.set([]);
+            timeStore.set(0);
+            caloriesStore.set(0);
+            isRunningStore.set(false);
+        } catch (error) {
+            console.error('Error stopping exercise:', error);
+        } finally {
+        }
     }
 
     async function watchLocation() {
@@ -125,7 +187,9 @@
         }
 
         let locationTimeoutId: any = setTimeout(async () => {
-            alert("Location accuracy is too low, tracking will be stopped.");
+            alertTitle = "Location not acquired";
+            alertDescription = "Accuracy is too low. Please try again later.";
+            isAlertOpen = true;
             stopExercise();
         }, 120 * 1000);
 
@@ -137,7 +201,7 @@
             distanceFilter: 0,
         }, async (currLoc, err) => {
             if (!currLoc || err) {
-                if (err?.code === "NOT_AUTHORIZED") {
+/*                if (err?.code === "NOT_AUTHORIZED") {
                     if (window.confirm(
                         "We need your location, " +
                         "but do not have permission.\n\n" +
@@ -145,17 +209,21 @@
                     )) {
                         BackgroundGeolocation.openSettings();
                     }
-                }
+                }*/
                 return;
             }
 
-            if (currLoc.accuracy >= 10) {
+            if (currLoc.accuracy >= 8) {
                 return;
             } else {
                 if (locationTimeoutId) {
-                    alert("We've successfully acquired your location.")
+                    alertTitle = "Location acquired";
+                    alertDescription = "We successfully acquired your location.";
+                    isAlertOpen = true;
+                    startStore.set(DateTime.now().toISO());
                     clearTimeout(locationTimeoutId);
                     locationTimeoutId = null;
+                    isLocationAcquired = true;
                 }
             }
 
@@ -178,9 +246,16 @@
                     distance = calculateDistance($locationStore[$locationStore.length - 1], currLoc);
                 }
                 distanceStore.update(value => value + distance);
-                countStepsAndCalories(distance);
+                if (lastLocationTime) {
+                    countCalories(distance, DateTime.now().diff(lastLocationTime).as("hours"));
+                }
             }
+            lastLocationTime = DateTime.now();
             $locationStore.push(currLoc);
+
+            const steps = await Pedometer.getStepCount();
+            console.log(steps);
+            stepStore.set(steps.steps);
 
             if ($locationStore.length === 100) {
                 await saveAllLocationsLocally();
@@ -232,20 +307,29 @@
     }
 
 
-    async function saveExercise() {
+    async function saveExercise(
+        calories: number,
+        currentActivityId: number,
+        distance: number,
+        startTime: string,
+        endTime: string,
+        locations: Location[],
+        selectedExercise: any,
+        steps: number,
+        duration: number,
+        userId: string
+    ) {
         console.log('Exercise stores:');
-      console.log('Calories:', $caloriesStore);
-      console.log('Current Activity ID:', $currentActivityIdStore);
-      console.log('Distance:', $distanceStore);
-      console.log('End:', $endStore);
-      console.log('Is Running:', $isRunningStore);
-      console.log('Location:', $locationStore);
-      console.log('Pause Start:', $pauseStartStore);
-      console.log('Selected Exercise:', $selectedExerciseStore);
-      console.log('Start:', $startStore);
-      console.log('Steps:', $stepStore);
-      console.log('Time:', $timeStore);
-      console.log('Total Paused Seconds:', $totalPausedSecondsStore);
+        console.log('Calories:', calories);
+        console.log('Current Activity ID:', currentActivityId);
+        console.log('Distance:', distance);
+        console.log('End:', endTime);
+        console.log('Location:', locations);
+        console.log('Selected Exercise:', selectedExercise);
+        console.log('Start:', startTime);
+        console.log('Steps:', steps);
+        console.log('Time:', duration);
+
         await saveActivityLocally();
         await saveAllLocationsLocally();
         console.log("Added locations locally")
@@ -258,14 +342,14 @@
         isUploadingExerciseStore.set(true);
 
         const activity = await pb.collection("activities").create({
-            user: $userStore?.id,
-            start: $startStore,
-            end: DateTime.now().toISO(),
-            distance: $distanceStore,
-            steps: $stepStore,
-            duration: $timeStore,
-            type: $selectedExerciseStore.id,
-            calories: $caloriesStore,
+            user: userId,
+            start: startTime,
+            end: endTime,
+            distance: distance,
+            steps: steps,
+            duration: duration,
+            type: selectedExercise.id,
+            calories: calories,
         });
 
         return activity;
@@ -279,16 +363,16 @@
         caloriesStore.set(0);
     });
 
-    onDestroy(async () => {
-        stopExercise();
-        if (watcherId) {
-            await BackgroundGeolocation.removeWatcher({
-                id: watcherId,
-            });
-            // await saveExercise();
-            watcherId = null;
-        }
-    });
+    // onDestroy(async () => {
+    //     stopExercise();
+    //     if (watcherId) {
+    //         await BackgroundGeolocation.removeWatcher({
+    //             id: watcherId,
+    //         });
+    //         // await saveExercise();
+    //         watcherId = null;
+    //     }
+    // });
 
 
     function calculateDistanceWithoutAltitude(loc1: Location, loc2: Location): number {
@@ -337,21 +421,30 @@
         return degrees * (Math.PI / 180);
     }
 
-    function countStepsAndCalories(deltaDistance: number) {
+    function countCalories(deltaDistance: number, deltaTime: number) {
         const params: StepCalculatorParams = {
-            distanceMeters: $distanceStore,
+            distanceMeters: deltaDistance,
             sex: $userStore?.sex,
             heightCm: $userStore?.height,
             speedMS: $locationStore[$locationStore.length - 1].speed ?? 1,
             weightKg: $userStore?.weight,
+            durationHours: deltaTime,
+            exerciseId: $currentActivityIdStore
         };
-        stepStore.set(calculateSteps(params));
-        params.distanceMeters = deltaDistance;
+        // stepStore.set(calculateSteps(params));
         caloriesStore.update(value => value + calculateCaloriesBurned(params));
     }
 </script>
 
 <Body class="overflow-y-hidden"/>
+
+<AlertDialog
+  bind:title={alertTitle}
+  bind:description={alertDescription}
+  actionLabel="Continue"
+  bind:isOpen={isAlertOpen}
+  onClose={() => isAlertOpen = false}
+/>
 
 <main class="w-screen h-screen flex flex-col items-center gap-12 relative">
     <img src={$selectedExerciseStore.background} class="w-screen h-screen absolute opacity-15 z-0"
@@ -382,7 +475,7 @@
         {/if}
         <ActiveExerciseInfo size="md">
             <span>{speed}</span>
-            <span slot="unit">Tempo</span>
+            <span slot="unit">M/S</span>
         </ActiveExerciseInfo>
         <ActiveExerciseInfo class="{$selectedExerciseStore.showSteps ? '' : 'col-span-2 justify-self-center'}"
                             size="md">

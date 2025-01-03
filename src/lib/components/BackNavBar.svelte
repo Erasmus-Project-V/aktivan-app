@@ -7,7 +7,7 @@
     export let backPath: string;
 </script>
 
-<nav class="w-full font-open-sans text-white h-24 bg-gray rounded-b-3xl flex items-center p-6 justify-between {$$props.class}">
+<nav class="w-full font-open-sans text-white pt-8 h-24 bg-gray rounded-b-3xl flex items-center p-6 justify-between {$$props.class}">
     <ArrowButton disabled={false} on:click={async () => await goto(backPath)}>
         <BackArrowIcon/>
     </ArrowButton>
